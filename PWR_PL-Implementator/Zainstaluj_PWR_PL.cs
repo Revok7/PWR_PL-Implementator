@@ -329,10 +329,12 @@ namespace PWR_PL_Implementator
 
                     var kopiezapasowe_Localization = WyszukajFolderyKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
 
+                    /*
                     for (int il1 = 0; il1 < listasciezek_wykrytekonflikty.Count; il1++)
                     {
                         Console.WriteLine("[DEBUG] listasciezek_wykrytekonflikty[" + il1 + "]==" + listasciezek_wykrytekonflikty[il1]);
                     }
+                    */
 
 
                     if (listasciezek_wykrytekonflikty.Count == 0)
@@ -476,7 +478,29 @@ namespace PWR_PL_Implementator
                     }
                     else
                     {
-                        Blad("Nie można zainstalować spolszczenia, ponieważ wykryto błędy w integralności plików gry. Istnieją pliki i/lub foldery potencjalnie stwarzające konflikty w ilości: " + listasciezek_wykrytekonflikty.Count.ToString() + ".");
+                        /*
+                        var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
+                        var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
+                        var kopiezapasowe_IntroductoryText = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+
+                        var kopiezapasowe_Localization = WyszukajFolderyKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+                        */
+
+                        if (File.Exists("..\\Wrath_Data\\sharedassets0.assets")) { File.Delete("..\\Wrath_Data\\sharedassets0.assets"); }
+                        if (File.Exists("..\\Bundles\\ui")) { File.Delete("..\\Bundles\\ui"); }
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")) { File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json"); }
+
+                        if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\")) { Directory.Delete("..\\Wrath_Data\\StreamingAssets\\Localization\\", true); }
+
+
+                        for (int il2 = 0; il2 < listasciezek_wykrytekonflikty.Count; il2++)
+                        {
+                            if (File.Exists(listasciezek_wykrytekonflikty[il2])) { File.Delete(listasciezek_wykrytekonflikty[il2]); }
+                            if (Directory.Exists(listasciezek_wykrytekonflikty[il2])) { Directory.Delete(listasciezek_wykrytekonflikty[il2], true); }
+                        }
+
+
+                        Blad("Nie można zainstalować spolszczenia, ponieważ wykryto błędy w integralności plików lokalizacyjnych gry. Istnieją pliki i/lub foldery potencjalnie stwarzające konflikty.");
                         Informacja("Pliki/foldery stwarzające konflikty zostały teraz automatycznie usunięte przez implementator spolszczenia, natomiast koniecznie sprawdź spójność plików gry w Steam/GoG/Epic przed kolejną próbą uruchomienia gry lub ponowną instalacją polonizacji.");
                     }
 

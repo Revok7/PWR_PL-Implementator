@@ -6,6 +6,12 @@
     <RootNamespace>PWR_PL_Implementator</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>PWR_PL.ico</ApplicationIcon>
+    <AssemblyName>Zainstaluj_PWR_PL</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="PWR_PL.ico" />
+  </ItemGroup>
 
 </Project>
