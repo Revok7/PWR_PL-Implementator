@@ -20,6 +20,7 @@ using System.ComponentModel.Design.Serialization;
 using System.Collections;
 
 
+
 namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
@@ -70,7 +71,7 @@ namespace PWR_PL_Implementator
                 }
                 catch
                 {
-                    Blad("BŁĄD: Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                    Blad("BŁĄD (#Version): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
                 }
 
                 plikVersionInfo_fs.Close();
@@ -97,11 +98,11 @@ namespace PWR_PL_Implementator
                 &&
                 File.Exists("..\\Bundles\\ui")
                 &&
-                File.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\")
+                Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\")
                 &&
                 File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")
                 &&
-                File.Exists("Implementacja\\Wrath_Data\\StreamingAssets\\Localization\\")
+                Directory.Exists("Implementacja\\Wrath_Data\\StreamingAssets\\Localization\\")
                 &&
                 File.Exists("Implementacja\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")
                 &&
@@ -117,6 +118,9 @@ namespace PWR_PL_Implementator
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
+
+                    Console.WriteLine("Trwa implementacja spolszczenia...");
+                    Console.WriteLine("Nie zamykaj tego okna i poczekaj, aż wyświetlą się kolejne informacje. Może to trochę potrwać...");
 
                     /*
                     if exist "Implementacja\Wrath_data\sharedassets0.assets"(
@@ -167,7 +171,26 @@ namespace PWR_PL_Implementator
                             File.Delete("..\\Bundles\\ui.PWR_PL");
                         }
 
-                        //"Implementacja\bundle-ui\xdelta3.exe" - d - s "..\Bundles\ui" "Implementacja\bundle-ui\pwr_pl-ui.patch" "..\Bundles\ui.PWR_PL"
+                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                        startInfo.CreateNoWindow = false;
+                        startInfo.UseShellExecute = false;
+                        startInfo.FileName = "Implementacja\\bundle-ui\\xdelta3.exe";
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        startInfo.Arguments = "-d -s ..\\Bundles\\ui Implementacja\\bundle-ui\\pwr_pl-ui.patch ..\\Bundles\\ui.PWR_PL";
+
+
+
+                        try
+                        {
+                            using (Process exeProcess = Process.Start(startInfo))
+                            {
+                                exeProcess.WaitForExit();
+                            }
+                        }
+                        catch
+                        {
+                            Blad("BŁĄD: Wystąpił nieoczekiwany problem z dostępem do patchera. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                        }
 
                         if (File.Exists("..\\Bundles\\ui.PWR_PL") == true)
                         {
@@ -177,6 +200,21 @@ namespace PWR_PL_Implementator
                             }
                         }
 
+                    }
+
+                    /*
+                    if not exist "..\Wrath_Data\StreamingAssets\Localization.ORIG.BAK\" ( xcopy "..\Wrath_Data\StreamingAssets\Localization\" "..\Wrath_Data\StreamingAssets\Localization.ORIG.BAK\" /E  >> tmp.log)
+	                if not exist "..\Wrath_Data\StreamingAssets\IntroductoryText.json.ORIG.BAK" ( move "..\Wrath_Data\StreamingAssets\IntroductoryText.json" "..\Wrath_Data\StreamingAssets\IntroductoryText.json.ORIG.BAK" >> tmp.log )
+                    */
+
+                    if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + "\\") == false)
+                    {
+                        Directory.Move("..\\Wrath_Data\\StreamingAssets\\Localization\\", "..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + "\\");
+                    }
+
+                    if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
+                    {
+                        File.Move("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry);
                     }
 
                 }
