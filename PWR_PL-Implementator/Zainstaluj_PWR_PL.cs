@@ -27,7 +27,8 @@ namespace PWR_PL_Implementator
     {
         readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), build 202303252119";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
-        readonly static Regex kopiezapasowe_regex = new Regex(@"ORIG.BAK");
+
+        static List<string> listasciezek_wykrytekonflikty = new List<string>();
 
         private static void Koniec()
         {
@@ -193,7 +194,60 @@ namespace PWR_PL_Implementator
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), sciezka_wewnatrz_APPDATA);
         }
 
-        static void Main(string[] args)
+        private static IEnumerable<string> WyszukajPlikiKopiiZapasowych(string sciezka_do_folderu, bool zapisz_na_liscie_jako_element_potencjalnie_stwarzajacy_konflikt = true)
+        {
+            IEnumerable<string> rezultat = null;
+
+            if (Directory.Exists(sciezka_do_folderu))
+            {
+                Regex kopiezapasowe_regex = new Regex(@"ORIG.BAK");
+
+                rezultat = Directory.GetFiles(sciezka_do_folderu, "*.*").Where(sciezka => kopiezapasowe_regex.IsMatch(sciezka));
+
+
+                foreach (string plik in rezultat)
+                {
+                    if (zapisz_na_liscie_jako_element_potencjalnie_stwarzajacy_konflikt == true)
+                    {
+                        listasciezek_wykrytekonflikty.Add(plik);
+                    }
+
+                    //Console.WriteLine("[DEBUG] plik==" + plik);
+                }
+
+
+            }
+
+            return rezultat;
+        }
+        private static IEnumerable<string> WyszukajFolderyKopiiZapasowych(string sciezka_do_folderu, bool zapisz_na_liscie_jako_element_potencjalnie_stwarzajacy_konflikt = true)
+        {
+            IEnumerable<string> rezultat = null;
+
+            if (Directory.Exists(sciezka_do_folderu))
+            {
+                Regex kopiezapasowe_regex = new Regex(@"ORIG.BAK");
+
+                rezultat = Directory.GetDirectories(sciezka_do_folderu, "*.*").Where(sciezka => kopiezapasowe_regex.IsMatch(sciezka));
+
+
+                foreach (string folder in rezultat)
+                {
+                    if (zapisz_na_liscie_jako_element_potencjalnie_stwarzajacy_konflikt == true)
+                    {
+                        listasciezek_wykrytekonflikty.Add(folder);
+                    }
+
+                    //Console.WriteLine("[DEBUG] folder==" + folder);
+                }
+
+
+            }
+
+            return rezultat;
+        }
+
+        private static void Main(string[] args)
         {
             Console.Title = _PWR_PL_naglowek;
 
@@ -231,20 +285,11 @@ namespace PWR_PL_Implementator
             Console.WriteLine("[DEBUG] test_di == " + test_di);
 
             Console.WriteLine("[DEBUG] Numer wersji polonizacji: " + PobierzNumerWersjiPolonizacji());
-            
-            IEnumerable<string> znalezione_kopiezapasowe = Directory.GetFiles("..\\Bundles\\", "*.*").Where(sciezka => kopiezapasowe_regex.IsMatch(sciezka));
-            
-            Console.WriteLine("znalezione_kopiezapasowe==" + znalezione_kopiezapasowe);
-
-            foreach (string plik in znalezione_kopiezapasowe)
-            {
-                Console.WriteLine("plik==" + plik);
-            }
 
             Koniec();
         }
 
-        private static void Zainstaluj_PWR_PL()
+        static void Zainstaluj_PWR_PL()
         {
 
             if
@@ -278,11 +323,19 @@ namespace PWR_PL_Implementator
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
                     /* --- */
+                    var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
+                    var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
+                    var kopiezapasowe_IntroductoryText = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+
+                    var kopiezapasowe_Localization = WyszukajFolderyKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+
+                    for (int il1 = 0; il1 < listasciezek_wykrytekonflikty.Count; il1++)
+                    {
+                        Console.WriteLine("[DEBUG] listasciezek_wykrytekonflikty[" + il1 + "]==" + listasciezek_wykrytekonflikty[il1]);
+                    }
 
 
-
-
-                    if (true)
+                    if (listasciezek_wykrytekonflikty.Count == 0)
                     {
                         Console.WriteLine("Trwa implementacja spolszczenia...");
                         Console.WriteLine("Nie zamykaj tego okna i poczekaj, aż wyświetlą się kolejne informacje. Może to trochę potrwać...");
@@ -423,7 +476,8 @@ namespace PWR_PL_Implementator
                     }
                     else
                     {
-
+                        Blad("Nie można zainstalować spolszczenia, ponieważ wykryto błędy w integralności plików gry. Istnieją pliki i/lub foldery potencjalnie stwarzające konflikty w ilości: " + listasciezek_wykrytekonflikty.Count.ToString() + ".");
+                        Informacja("Pliki/foldery stwarzające konflikty zostały teraz automatycznie usunięte przez implementator spolszczenia, natomiast koniecznie sprawdź spójność plików gry w Steam/GoG/Epic przed kolejną próbą uruchomienia gry lub ponowną instalacją polonizacji.");
                     }
 
                 }
