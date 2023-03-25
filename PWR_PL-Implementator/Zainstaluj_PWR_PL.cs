@@ -25,6 +25,14 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), build 202303252119";
+
+        private static void Koniec()
+        {
+            Console.WriteLine("Kliknij dowolny klawisz, aby zamknąć to okno.");
+            Console.ReadKey();
+        }
+
         private static void Blad(string tresc)
         {
             Console.BackgroundColor = ConsoleColor.Red;
@@ -50,6 +58,70 @@ namespace PWR_PL_Implementator
             Console.BackgroundColor = ConsoleColor.Magenta;
             Console.WriteLine(tresc);
             Console.ResetColor();
+        }
+
+        private static string PobierzNumerWersjiPolonizacji()
+        {
+            string numerwersjipolonizacji = "NULL";
+
+            string sciezka_do_pliku_IntroductoryText = "Implementacja\\Wrath_Data\\StreamingAssets\\IntroductoryText.json";
+
+            string plikIntroductoryText_tresc = "";
+
+            if (File.Exists(sciezka_do_pliku_IntroductoryText) == true)
+            {
+                FileStream plikIntroductoryText_fs = new FileStream(sciezka_do_pliku_IntroductoryText, FileMode.Open, FileAccess.Read);
+
+                try
+                {
+                    StreamReader plikIntroductoryText_sr = new StreamReader(plikIntroductoryText_fs);
+
+                    plikIntroductoryText_tresc = plikIntroductoryText_sr.ReadToEnd();
+
+                    plikIntroductoryText_sr.Close();
+
+                }
+                catch
+                {
+                    Blad("BŁĄD (#IntroductoryText): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+
+                }
+
+                plikIntroductoryText_fs.Close();
+
+                if (plikIntroductoryText_tresc.Contains("Zainstalowana wersja: ") == true && plikIntroductoryText_tresc.Contains("</size>"))
+                {
+                    string[] filtr1 = plikIntroductoryText_tresc.Split("Zainstalowana wersja: ", StringSplitOptions.None);
+
+                    if (filtr1.Length > 1)
+                    {
+                        string[] filtr2 = filtr1[1].Split("</size>", StringSplitOptions.None);
+
+                        if (filtr2.Length > 1)
+                        {
+                            numerwersjipolonizacji = filtr2[0];
+                        }
+                    }
+                    else
+                    {
+                        numerwersjipolonizacji = "NULL";
+                    }
+                }
+                else
+                {
+                    numerwersjipolonizacji = "NULL";
+                }
+
+            }
+            else
+            {
+                numerwersjipolonizacji = "NULL";
+            }
+
+            //Console.WriteLine("[DEBUG] numerwersjipolonizacji==" + numerwersjipolonizacji);
+
+            return numerwersjipolonizacji;
+
         }
 
         private static string PobierzDaneZVersionInfo(string sciezka_do_pliku_VersionInfo)
@@ -84,11 +156,76 @@ namespace PWR_PL_Implementator
             }
         }
 
+        private static void SkopiujFolderWrazZZawartoscia(string sciezka_folderu_do_skopiowania, string sciezka_docelowa)
+        {
+            DirectoryInfo folderzrodlowy_di = new DirectoryInfo(sciezka_folderu_do_skopiowania);
+            DirectoryInfo folderdocelowy_di = new DirectoryInfo(sciezka_docelowa);
+
+            if (folderzrodlowy_di.FullName.ToLower() == folderdocelowy_di.FullName.ToLower())
+            {
+                return;
+            }
+
+            if (Directory.Exists(folderdocelowy_di.FullName) == false)
+            {
+                Directory.CreateDirectory(folderdocelowy_di.FullName);
+            }
+
+            foreach (FileInfo fi in folderzrodlowy_di.GetFiles())
+            {
+                //Console.WriteLine(@"[DEBUG] Kopiowanie {0}\{1}", folderdocelowy_di.FullName, fi.Name);
+                
+                fi.CopyTo(Path.Combine(folderdocelowy_di.ToString(), fi.Name), true);
+            }
+
+            foreach (DirectoryInfo diSourceSubDir in folderzrodlowy_di.GetDirectories())
+            {
+                DirectoryInfo nextTargetSubDir =
+                    folderdocelowy_di.CreateSubdirectory(diSourceSubDir.Name);
+                //SkopiujFolderWrazZZawartoscia(diSourceSubDir, nextTargetSubDir);
+            }
+        }
+
+        static string APPDATA(string sciezka_wewnatrz_APPDATA)
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), sciezka_wewnatrz_APPDATA);
+        }
+
         static void Main(string[] args)
         {
+            Console.Title = _PWR_PL_naglowek;
 
-            if
-            
+            string separator_naglowka = "";
+            for (int s1 = 0; s1 < _PWR_PL_naglowek.Length+4; s1++)
+            {
+                separator_naglowka += "-";
+            }
+
+            Console.WriteLine(separator_naglowka);
+            Console.WriteLine("| " + _PWR_PL_naglowek + " |");
+            Console.WriteLine(separator_naglowka);
+
+            string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
+
+            Console.WriteLine("Wersja polonizacji PWR_PL: " + wersja_polonizacji);
+
+            if (args.Length > 0)
+            {
+                if (args[0] == "-test")
+                {
+                    DirectoryInfo test_di = new DirectoryInfo("..\\Wrath_Data\\StreamingAssets\\Version.info");
+
+                    Console.WriteLine("[DEBUG] test_di == " + test_di);
+
+                    Console.WriteLine("[DEBUG] Numer wersji polonizacji: " + PobierzNumerWersjiPolonizacji());
+
+                    Koniec();
+                }
+            }
+            else
+            {
+
+                if
                 (
                 File.Exists("..\\Wrath_Data\\StreamingAssets\\Version.info")
                 &&
@@ -110,128 +247,211 @@ namespace PWR_PL_Implementator
                 &&
                 File.Exists("Kompatybilnosc\\Version.info")
                 )
-            {
-                string kompatybilnoscspolszczenia_dane = PobierzDaneZVersionInfo("Kompatybilnosc\\Version.info");
-                string aktualniezainstalowanawersjagry_dane = PobierzDaneZVersionInfo("..\\Wrath_Data\\StreamingAssets\\Version.info");
-
-                string kompatybilny_numerwersjigry = kompatybilnoscspolszczenia_dane.Split(new char[] { ' ' })[3];
-
-                if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
+                    string kompatybilnoscspolszczenia_dane = PobierzDaneZVersionInfo("Kompatybilnosc\\Version.info");
+                    string aktualniezainstalowanawersjagry_dane = PobierzDaneZVersionInfo("..\\Wrath_Data\\StreamingAssets\\Version.info");
 
-                    Console.WriteLine("Trwa implementacja spolszczenia...");
-                    Console.WriteLine("Nie zamykaj tego okna i poczekaj, aż wyświetlą się kolejne informacje. Może to trochę potrwać...");
+                    string kompatybilny_numerwersjigry = kompatybilnoscspolszczenia_dane.Split(new char[] { ' ' })[3];
 
-                    /*
-                    if exist "Implementacja\Wrath_data\sharedassets0.assets"(
-
-                    if not exist "..\Wrath_Data\sharedassets0.assets.ORIG.BAK"(move "..\Wrath_Data\sharedassets0.assets" "..\Wrath_Data\sharedassets0.assets.ORIG.BAK" >> tmp.log)
-
-                    copy "Implementacja\Wrath_Data\sharedassets0.assets" "..\Wrath_Data\sharedassets0.assets" >> tmp.log
-	                )
-                    */
-
-                    if (File.Exists("Implementacja\\Wrath_data\\sharedassets0.assets") == true)
+                    if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                     {
-                        if (File.Exists("..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
+
+                        Console.WriteLine("Trwa implementacja spolszczenia...");
+                        Console.WriteLine("Nie zamykaj tego okna i poczekaj, aż wyświetlą się kolejne informacje. Może to trochę potrwać...");
+
+                        /*
+                        if exist "Implementacja\Wrath_data\sharedassets0.assets"(
+
+                        if not exist "..\Wrath_Data\sharedassets0.assets.ORIG.BAK"(move "..\Wrath_Data\sharedassets0.assets" "..\Wrath_Data\sharedassets0.assets.ORIG.BAK" >> tmp.log)
+
+                        copy "Implementacja\Wrath_Data\sharedassets0.assets" "..\Wrath_Data\sharedassets0.assets" >> tmp.log
+                        )
+                        */
+
+                        if (File.Exists("Implementacja\\Wrath_data\\sharedassets0.assets") == true)
                         {
-                            File.Move("..\\Wrath_Data\\sharedassets0.assets", "..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry);
-                        }
-                    }
-
-                    /*
-                    	if exist "Implementacja\bundle-ui\" (
-		                if exist "Implementacja\bundle-ui\xdelta3.exe" (
-			                if exist "Implementacja\bundle-ui\pwr_pl-ui.patch" (
-				                if exist "..\Bundles\ui.PWR_PL" ( del "..\Bundles\ui.PWR_PL" )
-				
-				                "Implementacja\bundle-ui\xdelta3.exe" -d -s "..\Bundles\ui" "Implementacja\bundle-ui\pwr_pl-ui.patch" "..\Bundles\ui.PWR_PL"
-				
-				                if exist "..\Bundles\ui.PWR_PL" (
-					                if not exist "..\Bundles\ui.ORIG.BAK" ( move "..\Bundles\ui" "..\Bundles\ui.ORIG.BAK" >> tmp.log )
-					                move "..\Bundles\ui.PWR_PL" "..\Bundles\ui" >> tmp.log					
-				                )
-			                )	
-		                )	
-	                )
-  
-                    */
-
-                    if
-                    (
-                        Directory.Exists("Implementacja\\bundle-ui\\") == true
-                        &&
-                        File.Exists("Implementacja\\bundle-ui\\xdelta3.exe") == true
-                        &&
-                        File.Exists("Implementacja\\bundle-ui\\pwr_pl-ui.patch") == true
-                    )
-                    {
-                        if (File.Exists("..\\Bundles\\ui.PWR_PL") == true)
-                        {
-                            File.Delete("..\\Bundles\\ui.PWR_PL");
-                        }
-
-                        ProcessStartInfo startInfo = new ProcessStartInfo();
-                        startInfo.CreateNoWindow = false;
-                        startInfo.UseShellExecute = false;
-                        startInfo.FileName = "Implementacja\\bundle-ui\\xdelta3.exe";
-                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        startInfo.Arguments = "-d -s ..\\Bundles\\ui Implementacja\\bundle-ui\\pwr_pl-ui.patch ..\\Bundles\\ui.PWR_PL";
-
-
-
-                        try
-                        {
-                            using (Process exeProcess = Process.Start(startInfo))
+                            if (File.Exists("..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
                             {
-                                exeProcess.WaitForExit();
-                            }
-                        }
-                        catch
-                        {
-                            Blad("BŁĄD: Wystąpił nieoczekiwany problem z dostępem do patchera. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
-                        }
-
-                        if (File.Exists("..\\Bundles\\ui.PWR_PL") == true)
-                        {
-                            if (File.Exists("..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
-                            {
-                                File.Move("..\\Bundles\\ui", "..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry);
+                                File.Move("..\\Wrath_Data\\sharedassets0.assets", "..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry);
                             }
                         }
 
+                        /*
+                            if exist "Implementacja\bundle-ui\" (
+                            if exist "Implementacja\bundle-ui\xdelta3.exe" (
+                                if exist "Implementacja\bundle-ui\pwr_pl-ui.patch" (
+                                    if exist "..\Bundles\ui.PWR_PL" ( del "..\Bundles\ui.PWR_PL" )
+
+                                    "Implementacja\bundle-ui\xdelta3.exe" -d -s "..\Bundles\ui" "Implementacja\bundle-ui\pwr_pl-ui.patch" "..\Bundles\ui.PWR_PL"
+
+                                    if exist "..\Bundles\ui.PWR_PL" (
+                                        if not exist "..\Bundles\ui.ORIG.BAK" ( move "..\Bundles\ui" "..\Bundles\ui.ORIG.BAK" >> tmp.log )
+                                        move "..\Bundles\ui.PWR_PL" "..\Bundles\ui" >> tmp.log					
+                                    )
+                                )	
+                            )	
+                        )
+
+                        */
+
+                        if
+                        (
+                            Directory.Exists("Implementacja\\bundle-ui\\") == true
+                            &&
+                            File.Exists("Implementacja\\bundle-ui\\xdelta3.exe") == true
+                            &&
+                            File.Exists("Implementacja\\bundle-ui\\pwr_pl-ui.patch") == true
+                        )
+                        {
+                            if (File.Exists("..\\Bundles\\ui.PWR_PL") == true)
+                            {
+                                File.Delete("..\\Bundles\\ui.PWR_PL");
+                            }
+
+                            ProcessStartInfo startInfo = new ProcessStartInfo();
+                            startInfo.CreateNoWindow = false;
+                            startInfo.UseShellExecute = false;
+                            startInfo.FileName = "Implementacja\\bundle-ui\\xdelta3.exe";
+                            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                            startInfo.Arguments = "-d -s ..\\Bundles\\ui Implementacja\\bundle-ui\\pwr_pl-ui.patch ..\\Bundles\\ui.PWR_PL";
+
+
+
+                            try
+                            {
+                                using (Process exeProcess = Process.Start(startInfo))
+                                {
+                                    exeProcess.WaitForExit();
+                                }
+                            }
+                            catch
+                            {
+                                Blad("BŁĄD: Wystąpił nieoczekiwany problem z dostępem do patchera. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                            }
+
+                            if (File.Exists("..\\Bundles\\ui.PWR_PL") == true)
+                            {
+                                if (File.Exists("..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
+                                {
+                                    File.Move("..\\Bundles\\ui", "..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry);
+                                }
+                            }
+
+                        }
+
+                        /*
+                        if not exist "..\Wrath_Data\StreamingAssets\Localization.ORIG.BAK\" ( xcopy "..\Wrath_Data\StreamingAssets\Localization\" "..\Wrath_Data\StreamingAssets\Localization.ORIG.BAK\" /E  >> tmp.log)
+                        if not exist "..\Wrath_Data\StreamingAssets\IntroductoryText.json.ORIG.BAK" ( move "..\Wrath_Data\StreamingAssets\IntroductoryText.json" "..\Wrath_Data\StreamingAssets\IntroductoryText.json.ORIG.BAK" >> tmp.log )
+                        */
+
+                        if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + "\\") == false)
+                        {
+                            SkopiujFolderWrazZZawartoscia("..\\Wrath_Data\\StreamingAssets\\Localization\\", "..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + "\\");
+                        }
+
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
+                        {
+                            File.Move("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry);
+                        }
+
+                        /*
+                        copy "Implementacja\Wrath_Data\StreamingAssets\Localization\" "..\Wrath_Data\StreamingAssets\Localization\" >> tmp.log
+                        copy "Implementacja\Wrath_Data\StreamingAssets\IntroductoryText.json" "..\Wrath_Data\StreamingAssets\IntroductoryText.json" >> tmp.log
+                        */
+
+                        SkopiujFolderWrazZZawartoscia("Implementacja\\Wrath_Data\\StreamingAssets\\Localization\\", "..\\Wrath_Data\\StreamingAssets\\Localization\\");
+
+                        File.Copy("Implementacja\\Wrath_Data\\StreamingAssets\\IntroductoryText.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json");
+
+
+                        /*
+                        	if exist "%APPDATA%\..\LocalLow\Owlcat Games\Pathfinder Wrath Of The Righteous\general_settings.json" (
+		                        powershell -Command "(gc '%APPDATA%\..\LocalLow\Owlcat Games\Pathfinder Wrath Of The Righteous\general_settings.json') -replace 'enGB', 'deDE' | Out-File -encoding UTF8 '%APPDATA%\..\LocalLow\Owlcat Games\Pathfinder Wrath Of The Righteous\general_settings.json'"
+	                        ) else (
+		                        if not exist "%APPDATA%\..\LocalLow\Owlcat Games\" ( mkdir "%APPDATA%\..\LocalLow\Owlcat Games\" >> tmp.log )
+		                        if not exist "%APPDATA%\..\LocalLow\Owlcat Games\Pathfinder Wrath Of The Righteous\" ( mkdir "%APPDATA%\..\LocalLow\Owlcat Games\Pathfinder Wrath Of The Righteous\" >> tmp.log )
+		                        copy "Konfiguracja\deDE-default-general_settings.json" "%APPDATA%\..\LocalLow\Owlcat Games\Pathfinder Wrath Of The Righteous\general_settings.json" >> tmp.log
+	                        )
+                        */
+
+
+                        if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json")) == true)
+                        {
+                            File.Move(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json"), APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry));
+
+                            FileStream plikkonfiguracjigry_przedzmiana_fs = new FileStream(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry), FileMode.Open, FileAccess.Read);
+
+                            string plikkonfiguracjigry_przedzmiana_tresc = "";
+
+                            try
+                            {
+                                StreamReader plikkonfiguracjigry_przedzmiana_sr = new StreamReader(plikkonfiguracjigry_przedzmiana_fs);
+
+                                plikkonfiguracjigry_przedzmiana_tresc = plikkonfiguracjigry_przedzmiana_sr.ReadToEnd();
+
+                                plikkonfiguracjigry_przedzmiana_sr.Close();
+
+                            }
+                            catch
+                            {
+                                Blad("BŁĄD (#GeneralSettingsTMP(Read)): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                            }
+
+                            plikkonfiguracjigry_przedzmiana_fs.Close();
+
+
+
+                            FileStream plikkonfiguracjigry_pozmianie_fs = new FileStream(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json"), FileMode.CreateNew, FileAccess.Write);
+
+                            try
+                            {
+                                StreamWriter plikkonfiguracjigry_pozmianie_sw = new StreamWriter(plikkonfiguracjigry_pozmianie_fs);
+
+                                plikkonfiguracjigry_pozmianie_sw.Write(plikkonfiguracjigry_przedzmiana_tresc.Replace("\"settings.game.main.locale\": \"enGB\"", "\"settings.game.main.locale\": \"deDE\""));
+
+                                plikkonfiguracjigry_pozmianie_sw.Close();
+
+                            }
+                            catch
+                            {
+                                Blad("BŁĄD (#GeneralSettings(Write)): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                            }
+
+                            plikkonfiguracjigry_pozmianie_fs.Close();
+
+                            if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry)) == true) { File.Delete(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry)); }
+
+                        }
+                        else
+                        {
+                            if (Directory.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\")) == false) { Directory.CreateDirectory(APPDATA("..\\LocalLow\\Owlcat Games\\")); }
+                            if (Directory.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\")) == false) { Directory.CreateDirectory(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\")); }
+                            File.Copy("Konfiguracja\\deDE-default-general_settings.json", APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json"));
+                        }
+
+
+                        Sukces("Zaimplementowano polonizację " + wersja_polonizacji + " do gry Pathfinder Wrath of the Righteous v." + kompatybilny_numerwersjigry + ".");
+                        Informacja("Jeśli po instalacji spolszczenia gra uruchamia się w języku angielskim to aby aktywować język polski, w opcjach gry przełącz na niemiecki wchodząc w Options/Language/\"Deutsch\"/Accept.");
+
                     }
-
-                    /*
-                    if not exist "..\Wrath_Data\StreamingAssets\Localization.ORIG.BAK\" ( xcopy "..\Wrath_Data\StreamingAssets\Localization\" "..\Wrath_Data\StreamingAssets\Localization.ORIG.BAK\" /E  >> tmp.log)
-	                if not exist "..\Wrath_Data\StreamingAssets\IntroductoryText.json.ORIG.BAK" ( move "..\Wrath_Data\StreamingAssets\IntroductoryText.json" "..\Wrath_Data\StreamingAssets\IntroductoryText.json.ORIG.BAK" >> tmp.log )
-                    */
-
-                    if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + "\\") == false)
+                    else
                     {
-                        Directory.Move("..\\Wrath_Data\\StreamingAssets\\Localization\\", "..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + "\\");
-                    }
-
-                    if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
-                    {
-                        File.Move("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry);
+                        Blad("BŁĄD: Nie można zainstalować spolszczenia, ponieważ wystąpiła niezgodność wersji spolszczenia z zainstalowaną wersją gry.");
+                        Informacja("Upewnij się, że instalujesz wersję spolszczenia zgodną z aktualnie zainstalowaną wersją gry.");
                     }
 
                 }
                 else
                 {
-                    Blad("BŁĄD: Nie można zainstalować spolszczenia, ponieważ wystąpiła niezgodność wersji spolszczenia z zainstalowaną wersją gry.");
-                    Informacja("Upewnij się, że instalujesz wersję spolszczenia zgodną z aktualnie zainstalowaną wersją gry.");
+                    Blad("BŁĄD: Weryfikacja plików gry nie powiodła się. Upewnij się, że folder \"PWR_PL\" wraz całą zawartością znajduje się w głównym folderze z zainstalowaną grą Pathfinder Wrath of the Righteous. Jeśli tak jest, a mimo tego wyświetla się ten błąd, wtedy sprawdź spójność plików gry w Steam/GoG/Epic, a nastepnie spróbuj ponownie zainstalować spolszczenie.");
                 }
 
             }
-            else
-            {
-                Blad("BŁĄD: Weryfikacja plików gry nie powiodła się. Upewnij się, że folder \"PWR_PL\" wraz całą zawartością znajduje się w głównym folderze z zainstalowaną grą Pathfinder Wrath of the Righteous. Jeśli tak jest, a mimo tego wyświetla się ten błąd, wtedy sprawdź spójność plików gry w Steam/GoG/Epic, a nastepnie spróbuj ponownie zainstalować spolszczenie.");
-            }
 
+            Koniec();
 
-            Console.ReadKey();
         }
+
     }
+
 }
