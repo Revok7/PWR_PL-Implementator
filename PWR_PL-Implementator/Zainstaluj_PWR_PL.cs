@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303260329";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303260405";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -524,6 +524,8 @@ namespace PWR_PL_Implementator
         
         private static void Odinstaluj_PWR_PL()
         {
+            int ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY = 0;
+
             if
             (
             File.Exists("..\\Wrath_Data\\StreamingAssets\\Version.info")
@@ -569,9 +571,81 @@ namespace PWR_PL_Implementator
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
+                    Console.WriteLine("Trwa usuwanie Polskiej Lokalizacji PWR_PL: " + PobierzNumerWersjiPolonizacji() + "");
+                    Console.WriteLine("Nie zamykaj tego okna i poczekaj, aż wyświetlą się kolejne informacje. Może to trochę potrwać...");
+
                     if (File.Exists("Implementacja\\Wrath_Data\\sharedassets0.assets") == true)
                     {
+                        if (File.Exists("..\\Wrath_Data\\sharedassets0.assets") == true)
+                        {
+                            File.Delete("..\\Wrath_Data\\sharedassets0.assets");
+                        }
 
+                        if (File.Exists("..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry) == true)
+                        {
+                            File.Move("..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry, "..\\Wrath_Data\\sharedassets0.assets");
+                        }
+                        else
+                        {
+                            ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
+                        }
+                    }
+
+
+                    if (File.Exists("Implementacja\\bundle-ui\\pwr_pl-ui.patch") == true)
+                    {
+                        if (File.Exists("..\\Bundles\\ui") == true)
+                        {
+                            File.Delete("..\\Bundles\\ui");
+                        }
+
+
+                        if (File.Exists("..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry) == true)
+                        {
+                            File.Move("..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry, "..\\Bundles\\ui");
+                        }
+                        else
+                        {
+                            ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
+                        }
+                    }
+
+
+                    //if (File.Exists("Implementacja\\Wrath_Data\\StreamingAssets\\IntroductoryText.json") == true) /* WARUNEK IF W TYM PRZYPADKU NIE OBOWIĄZUJE, ponieważ plik "IntroductoryText.json" zawsze musi znajdować się w builderze instalatora */
+                    {
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json") == true)
+                        {
+                            File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json");
+                        }
+
+
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == true)
+                        {
+                            File.Move("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry, "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json");
+                        }
+                        else
+                        {
+                            ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
+                        }
+                    }
+
+
+                    //if (Directory.Exists("Implementacja\\Wrath_Data\\StreamingAssets\\Localization\\") == true) /* WARUNEK IF W TYM PRZYPADKU NIE OBOWIĄZUJE, ponieważ folder "Localization" zawsze musi znajdować się w builderze instalatora */
+                    {
+                        if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\") == true)
+                        {
+                            Directory.Delete("..\\Wrath_Data\\StreamingAssets\\Localization\\", true);
+                        }
+
+
+                        if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry) == true)
+                        {
+                            Directory.Move("..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry, "..\\Wrath_Data\\StreamingAssets\\Localization");
+                        }
+                        else
+                        {
+                            ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
+                        }
                     }
 
                 }
