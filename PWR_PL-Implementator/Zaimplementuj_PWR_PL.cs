@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261920";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261944";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -305,34 +305,39 @@ namespace PWR_PL_Implementator
         {
             Console.Title = _PWR_PL_naglowek;
 
-            string separator_naglowka = "";
-            for (int s1 = 0; s1 < _PWR_PL_naglowek.Length + 4; s1++)
+            Process[] proces_implementatora = Process.GetProcessesByName("Zaimplementuj_PWR_PL");
+
+            if (proces_implementatora.Length <= 1)
             {
-                separator_naglowka += "-";
-            }
-
-            Console.WriteLine(separator_naglowka);
-            Console.WriteLine("| " + _PWR_PL_naglowek + " |");
-            Console.WriteLine(separator_naglowka);
-
-            Console.WriteLine("Wersja polonizacji PWR_PL: " + wersja_polonizacji);
-
-            if (args.Length > 0)
-            {
-                if (args[0] == "-test")
+                string separator_naglowka = "";
+                for (int s1 = 0; s1 < _PWR_PL_naglowek.Length + 4; s1++)
                 {
-                    Test();
+                    separator_naglowka += "-";
                 }
-                else if (args[0] == "-deimplementuj")
-                {
-                    Deimplementuj_PWR_PL();
-                }
-            }
-            else
-            {
-                Zaimplementuj_PWR_PL();
-            }
 
+                Console.WriteLine(separator_naglowka);
+                Console.WriteLine("| " + _PWR_PL_naglowek + " |");
+                Console.WriteLine(separator_naglowka);
+
+                Console.WriteLine("Wersja polonizacji PWR_PL: " + wersja_polonizacji);
+
+                if (args.Length > 0)
+                {
+                    if (args[0] == "-test")
+                    {
+                        Test();
+                    }
+                    else if (args[0] == "-deimplementuj")
+                    {
+                        Deimplementuj_PWR_PL();
+                    }
+                }
+                else
+                {
+                    Zaimplementuj_PWR_PL();
+                }
+
+            }
 
         }
 
