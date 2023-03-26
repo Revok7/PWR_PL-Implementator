@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261902";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261920";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -323,14 +323,14 @@ namespace PWR_PL_Implementator
                 {
                     Test();
                 }
-                else if (args[0] == "-odinstaluj" || args[0] == "-uninstall")
+                else if (args[0] == "-deimplementuj")
                 {
-                    Odinstaluj_PWR_PL();
+                    Deimplementuj_PWR_PL();
                 }
             }
             else
             {
-                Zainstaluj_PWR_PL();
+                Zaimplementuj_PWR_PL();
             }
 
 
@@ -353,7 +353,7 @@ namespace PWR_PL_Implementator
             Koniec();
         }
 
-        private static void Zainstaluj_PWR_PL()
+        private static void Zaimplementuj_PWR_PL()
         {
 
             if
@@ -539,7 +539,7 @@ namespace PWR_PL_Implementator
             Koniec();
         }
 
-        private static void Odinstaluj_PWR_PL()
+        private static void Deimplementuj_PWR_PL()
         {
             int ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY = 0;
 
