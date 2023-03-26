@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303260405";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303260450";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -192,6 +192,60 @@ namespace PWR_PL_Implementator
         private static string APPDATA(string sciezka_wewnatrz_APPDATA)
         {
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), sciezka_wewnatrz_APPDATA);
+        }
+
+        private static void ZmienJezykWPlikuKonfiguracyjnymGry(string oznaczeniejezyka_przedzmiana, string oznaczeniejezyka_pozmianie) // "deDE": niemiecki/polski, "enGB": angielski
+        {
+
+            if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json")) == true)
+            {
+                File.Move(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json"), APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP"));
+
+                FileStream plikkonfiguracjigry_przedzmiana_fs = new FileStream(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP"), FileMode.Open, FileAccess.Read);
+
+                string plikkonfiguracjigry_przedzmiana_tresc = "";
+
+                try
+                {
+                    StreamReader plikkonfiguracjigry_przedzmiana_sr = new StreamReader(plikkonfiguracjigry_przedzmiana_fs);
+
+                    plikkonfiguracjigry_przedzmiana_tresc = plikkonfiguracjigry_przedzmiana_sr.ReadToEnd();
+
+                    plikkonfiguracjigry_przedzmiana_sr.Close();
+
+                }
+                catch
+                {
+                    Blad("BŁĄD (#GeneralSettingsTMP(Read)): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                }
+
+                plikkonfiguracjigry_przedzmiana_fs.Close();
+
+
+
+                FileStream plikkonfiguracjigry_pozmianie_fs = new FileStream(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json"), FileMode.CreateNew, FileAccess.Write);
+
+                try
+                {
+                    StreamWriter plikkonfiguracjigry_pozmianie_sw = new StreamWriter(plikkonfiguracjigry_pozmianie_fs);
+
+                    plikkonfiguracjigry_pozmianie_sw.Write(plikkonfiguracjigry_przedzmiana_tresc.Replace("\"settings.game.main.locale\": \"" + oznaczeniejezyka_przedzmiana + "\"", "\"settings.game.main.locale\": \"" + oznaczeniejezyka_pozmianie + "\""));
+
+                    plikkonfiguracjigry_pozmianie_sw.Close();
+
+                }
+                catch
+                {
+                    Blad("BŁĄD (#GeneralSettings(Write)): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                }
+
+                plikkonfiguracjigry_pozmianie_fs.Close();
+
+                if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP")) == true) { File.Delete(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP")); }
+
+
+            }
+
         }
 
         private static IEnumerable<string> WyszukajPlikiKopiiZapasowych(string sciezka_do_folderu, bool zapisz_na_liscie_jako_element_potencjalnie_stwarzajacy_konflikt = true)
@@ -423,50 +477,7 @@ namespace PWR_PL_Implementator
 
                         if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json")) == true)
                         {
-                            File.Move(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json"), APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry));
-
-                            FileStream plikkonfiguracjigry_przedzmiana_fs = new FileStream(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry), FileMode.Open, FileAccess.Read);
-
-                            string plikkonfiguracjigry_przedzmiana_tresc = "";
-
-                            try
-                            {
-                                StreamReader plikkonfiguracjigry_przedzmiana_sr = new StreamReader(plikkonfiguracjigry_przedzmiana_fs);
-
-                                plikkonfiguracjigry_przedzmiana_tresc = plikkonfiguracjigry_przedzmiana_sr.ReadToEnd();
-
-                                plikkonfiguracjigry_przedzmiana_sr.Close();
-
-                            }
-                            catch
-                            {
-                                Blad("BŁĄD (#GeneralSettingsTMP(Read)): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
-                            }
-
-                            plikkonfiguracjigry_przedzmiana_fs.Close();
-
-
-
-                            FileStream plikkonfiguracjigry_pozmianie_fs = new FileStream(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json"), FileMode.CreateNew, FileAccess.Write);
-
-                            try
-                            {
-                                StreamWriter plikkonfiguracjigry_pozmianie_sw = new StreamWriter(plikkonfiguracjigry_pozmianie_fs);
-
-                                plikkonfiguracjigry_pozmianie_sw.Write(plikkonfiguracjigry_przedzmiana_tresc.Replace("\"settings.game.main.locale\": \"enGB\"", "\"settings.game.main.locale\": \"deDE\""));
-
-                                plikkonfiguracjigry_pozmianie_sw.Close();
-
-                            }
-                            catch
-                            {
-                                Blad("BŁĄD (#GeneralSettings(Write)): Wystąpił nieoczekiwany problem z odczytem przynajmniej jednego pliku gry. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
-                            }
-
-                            plikkonfiguracjigry_pozmianie_fs.Close();
-
-                            if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry)) == true) { File.Delete(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP-" + kompatybilny_numerwersjigry)); }
-
+                            ZmienJezykWPlikuKonfiguracyjnymGry("enGB", "deDE");
                         }
                         else
                         {
@@ -672,8 +683,17 @@ namespace PWR_PL_Implementator
                 
                 }
 
-                //tu wbudować zmianę języka gry na enGB
+                ZmienJezykWPlikuKonfiguracyjnymGry("deDE", "enGB");
 
+                if (ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY == 0)
+                {
+                    Sukces("Polska Lokalizacja PWR " + PobierzNumerWersjiPolonizacji() + " została pomyślnie odinstalowana z gry Pathfinder Wrath of the Righteous " + kompatybilny_numerwersjigry + ".");
+                }
+                else
+                {
+                    Informacja("Polska Lokalizacja PWR " + PobierzNumerWersjiPolonizacji() + " została usunięta z gry Pathfinder Wrath of the Righteous " + kompatybilny_numerwersjigry + ", natomiast deimplementator spolszczenia napotkał przynajmniej jeden krytyczny wyjątek i wyniku tego nie zdołał przywrócić wszystkich plików gry do oryginalnego stanu.");
+                    Blad("Przed próbą uruchomienia gry koniecznie sprawdź spójność plików gry w Steam/GoG/Epic.");
+                }
             }
             else
             {
