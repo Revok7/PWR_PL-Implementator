@@ -26,7 +26,7 @@ namespace PWR_PL_Implementator
     class PWR_PL_Implementator
     {
         readonly static string exe_sciezka = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303262241";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303262304";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
         
         readonly static bool rejestruj_log = true; // jeśli zmienna jest ustawiona jako "true", wtedy rejestrowane są zdarzenia implementatora do pliku: %APPDATA$\PWR_PL\PWR_PL.log
@@ -335,7 +335,9 @@ namespace PWR_PL_Implementator
 
                     for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
                     {
-                        listasciezek_string = listasciezek_string + "\n" + liwr+1.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
+                        int np = liwr + 1;
+
+                        listasciezek_string = listasciezek_string + "\n" + np.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
                     }
 
                     ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
@@ -372,7 +374,9 @@ namespace PWR_PL_Implementator
 
                     for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
                     {
-                        listasciezek_string = listasciezek_string + "\n" + liwr + 1.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
+                        int np = liwr + 1;
+
+                        listasciezek_string = listasciezek_string + "\n" + np.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
                     }
 
                     ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
@@ -718,7 +722,7 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
-                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
 
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
@@ -739,7 +743,7 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
-                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
 
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
@@ -760,7 +764,7 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
-                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
 
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
@@ -781,7 +785,7 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
-                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego folderu gry z zawartością, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego folderu gry z zawartością, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
 
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
