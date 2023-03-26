@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261848";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261902";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -704,27 +704,32 @@ namespace PWR_PL_Implementator
 
                 if (File.Exists("unins000.exe") && File.Exists("unins000.dat"))
                 {
-                    ProcessStartInfo unins000_startInfo = new ProcessStartInfo();
-                    unins000_startInfo.CreateNoWindow = false;
-                    unins000_startInfo.UseShellExecute = false;
-                    unins000_startInfo.FileName = "unins000.exe";
-                    unins000_startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    //unins000_startInfo.Arguments = "";
+                    Process[] procesy_nazwa = Process.GetProcessesByName("unins000");
 
-
-
-                    try
+                    if (procesy_nazwa.Length <= 1)
                     {
-                        using (Process unins000_proces = Process.Start(unins000_startInfo))
+                        ProcessStartInfo unins000_startInfo = new ProcessStartInfo();
+                        unins000_startInfo.CreateNoWindow = false;
+                        unins000_startInfo.UseShellExecute = false;
+                        unins000_startInfo.FileName = "unins000.exe";
+                        unins000_startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        //unins000_startInfo.Arguments = "";
+
+
+
+                        try
                         {
-                            unins000_proces.WaitForExit();
+                            using (Process unins000_proces = Process.Start(unins000_startInfo))
+                            {
+                                unins000_proces.WaitForExit();
+                            }
                         }
-                    }
-                    catch
-                    {
-                        Blad("BŁĄD: Wystąpił nieoczekiwany problem z dostępem do aplikacji odinstalowującej (unins000.exe). Spróbuj uruchomić plik \"unins000.exe\" znajdujący się w folderze \"PWR_PL\" z uprawnieniami Administratora.");
-                    }
+                        catch
+                        {
+                            Blad("BŁĄD: Wystąpił nieoczekiwany problem z dostępem do aplikacji odinstalowującej (unins000.exe). Spróbuj uruchomić plik \"unins000.exe\" znajdujący się w folderze \"PWR_PL\" z uprawnieniami Administratora.");
+                        }
 
+                    }
                 }
 
 
