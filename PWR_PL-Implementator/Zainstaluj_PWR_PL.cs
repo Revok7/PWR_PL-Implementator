@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), build 202303252119";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303252119";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -269,6 +269,10 @@ namespace PWR_PL_Implementator
                 {
                     Test();
                 }
+                else if (args[0] == "-odinstaluj" || args[0] == "-uninstall")
+                {
+                    Odinstaluj_PWR_PL();
+                }
             }
             else
             {
@@ -289,7 +293,7 @@ namespace PWR_PL_Implementator
             Koniec();
         }
 
-        static void Zainstaluj_PWR_PL()
+        private static void Zainstaluj_PWR_PL()
         {
 
             if
@@ -322,7 +326,7 @@ namespace PWR_PL_Implementator
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
-                    /* --- */
+
                     var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
                     var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
                     var kopiezapasowe_IntroductoryText = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
@@ -478,13 +482,6 @@ namespace PWR_PL_Implementator
                     }
                     else
                     {
-                        /*
-                        var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
-                        var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
-                        var kopiezapasowe_IntroductoryText = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
-
-                        var kopiezapasowe_Localization = WyszukajFolderyKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
-                        */
 
                         if (File.Exists("..\\Wrath_Data\\sharedassets0.assets")) { File.Delete("..\\Wrath_Data\\sharedassets0.assets"); }
                         if (File.Exists("..\\Bundles\\ui")) { File.Delete("..\\Bundles\\ui"); }
@@ -516,6 +513,13 @@ namespace PWR_PL_Implementator
             {
                 Blad("BŁĄD: Weryfikacja plików gry nie powiodła się. Upewnij się, że folder \"PWR_PL\" wraz całą zawartością znajduje się w głównym folderze z zainstalowaną grą Pathfinder Wrath of the Righteous. Jeśli tak jest, a mimo tego wyświetla się ten błąd, wtedy sprawdź spójność plików gry w Steam/GoG/Epic, a nastepnie spróbuj ponownie zainstalować spolszczenie.");
             }
+
+            Koniec();
+        }
+        
+        private static void Odinstaluj_PWR_PL()
+        {
+
 
             Koniec();
         }
