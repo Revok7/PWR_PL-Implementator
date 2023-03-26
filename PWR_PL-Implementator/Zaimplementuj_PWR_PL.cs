@@ -25,19 +25,73 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261944";
+        readonly static string exe_sciezka = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303262241";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
+        
+        readonly static bool rejestruj_log = true; // jeśli zmienna jest ustawiona jako "true", wtedy rejestrowane są zdarzenia implementatora do pliku: %APPDATA$\PWR_PL\PWR_PL.log
+        static FileStream plikLOG_fs;
+        static StreamWriter plikLOG_sw;
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
 
+        private static string PobierzAktualnaDateICzas()
+        {
+            return DateTime.Now.ToString("[yyyy.MM.dd HH:mm:ss]");
+        }
+
+        private static void InicjalizujRejestratorLOG()
+        {
+            if (rejestruj_log == true)
+            {
+                if (Directory.Exists(APPDATA("PWR_PL\\")) == false)
+                {
+                    Directory.CreateDirectory(APPDATA("PWR_PL\\"));
+                }
+
+                plikLOG_fs = new FileStream(APPDATA("PWR_PL\\PWR_PL.log"), FileMode.Append, FileAccess.Write);
+
+                try
+                {
+                    plikLOG_sw = new StreamWriter(plikLOG_fs);
+                }
+                catch
+                {
+                    Blad("BŁĄD (#LOG): Wystąpił nieoczekiwany problem z zapisywaniem zdarzeń implementatora. Spróbuj uruchomić instalator spolszczenia z uprawnieniami Administratora.");
+                }
+
+            }
+        }
+
+        private static void ZapiszLOG(string tresc)
+        {
+            if (rejestruj_log == true)
+            {
+                plikLOG_sw.WriteLine(PobierzAktualnaDateICzas() + " " + tresc);
+            }
+        }
+
+        private static void ZamknijRejestratorLOG()
+        {
+            if (rejestruj_log == true)
+            {
+                plikLOG_sw.Close();
+                plikLOG_fs.Close();
+            }
+        }
+
         private static void Koniec()
         {
+            ZapiszLOG("Zakończono działanie implementatora.");
+            ZamknijRejestratorLOG();
+
             Console.WriteLine("Kliknij dowolny klawisz, aby zamknąć to okno.");
             Console.ReadKey();
         }
-
         private static void Blad(string tresc)
         {
+            ZapiszLOG("Komunikat BŁĘDU: \"" + tresc + "\"");
+
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(tresc);
             Console.ResetColor();
@@ -45,6 +99,8 @@ namespace PWR_PL_Implementator
         }
         private static void Sukces(string tresc)
         {
+            ZapiszLOG("Komunikat SUKCESU: \"" + tresc + "\"");
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(tresc);
             Console.ResetColor();
@@ -52,12 +108,16 @@ namespace PWR_PL_Implementator
         }
         private static void Sukces2(string tresc)
         {
+            ZapiszLOG("Komunikat SUKCESU: \"" + tresc + "\"");
+
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(tresc);
             Console.ResetColor();
         }
         private static void Informacja(string tresc)
         {
+            ZapiszLOG("Komunikat INFORMACYJNY: \"" + tresc + "\"");
+
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine(tresc);
             Console.ResetColor();
@@ -243,7 +303,7 @@ namespace PWR_PL_Implementator
 
                 if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP")) == true) { File.Delete(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json.TMP")); }
 
-
+                ZapiszLOG("Zmodyfikowano oznaczenie języka w pliku konfiguracyjnym gry z \"" + oznaczeniejezyka_przedzmiana + "\" na \"" + oznaczeniejezyka_pozmianie + "\".");
             }
 
         }
@@ -269,6 +329,17 @@ namespace PWR_PL_Implementator
                     //Console.WriteLine("[DEBUG] plik==" + plik);
                 }
 
+                if (listasciezek_wykrytekonflikty.Count > 0)
+                {
+                    string listasciezek_string = "";
+
+                    for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
+                    {
+                        listasciezek_string = listasciezek_string + "\n" + liwr+1.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
+                    }
+
+                    ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
+                }
 
             }
 
@@ -295,6 +366,17 @@ namespace PWR_PL_Implementator
                     //Console.WriteLine("[DEBUG] folder==" + folder);
                 }
 
+                if (listasciezek_wykrytekonflikty.Count > 0)
+                {
+                    string listasciezek_string = "";
+
+                    for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
+                    {
+                        listasciezek_string = listasciezek_string + "\n" + liwr + 1.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
+                    }
+
+                    ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
+                }
 
             }
 
@@ -303,42 +385,58 @@ namespace PWR_PL_Implementator
 
         private static void Main(string[] args)
         {
-            Console.Title = _PWR_PL_naglowek;
-
-            Process[] proces_implementatora = Process.GetProcessesByName("Zaimplementuj_PWR_PL");
-
-            if (proces_implementatora.Length <= 1)
+            try
             {
-                string separator_naglowka = "";
-                for (int s1 = 0; s1 < _PWR_PL_naglowek.Length + 4; s1++)
+
+                Console.Title = _PWR_PL_naglowek;
+
+                Process[] proces_implementatora = Process.GetProcessesByName("Zaimplementuj_PWR_PL");
+
+                InicjalizujRejestratorLOG();
+
+
+                if (proces_implementatora.Length <= 1)
                 {
-                    separator_naglowka += "-";
-                }
-
-                Console.WriteLine(separator_naglowka);
-                Console.WriteLine("| " + _PWR_PL_naglowek + " |");
-                Console.WriteLine(separator_naglowka);
-
-                Console.WriteLine("Wersja polonizacji PWR_PL: " + wersja_polonizacji);
-
-                if (args.Length > 0)
-                {
-                    if (args[0] == "-test")
+                    string separator_naglowka = "";
+                    for (int s1 = 0; s1 < _PWR_PL_naglowek.Length + 4; s1++)
                     {
-                        Test();
+                        separator_naglowka += "-";
                     }
-                    else if (args[0] == "-deimplementuj")
+
+                    Console.WriteLine(separator_naglowka);
+                    Console.WriteLine("| " + _PWR_PL_naglowek + " |");
+                    Console.WriteLine(separator_naglowka);
+
+                    Console.WriteLine("Wersja polonizacji PWR_PL: " + wersja_polonizacji);
+
+                    if (args.Length > 0)
                     {
-                        Deimplementuj_PWR_PL();
+                        if (args[0] == "-test")
+                        {
+                            Test();
+                        }
+                        else if (args[0] == "-deimplementuj")
+                        {
+                            Deimplementuj_PWR_PL();
+                        }
                     }
-                }
-                else
-                {
-                    Zaimplementuj_PWR_PL();
+                    else
+                    {
+                        Zaimplementuj_PWR_PL();
+                    }
+
                 }
 
             }
+            catch (Exception ex)
+            {
+                ZapiszLOG("Implementator napotkał krytyczny wyjątek i został niespodziewanie zamknięty: " + ex.Message);
 
+                Blad("NIEOCZEKIWANY BŁĄD: Implementator spolszczenia napotkał krytyczny wyjątek i musi zostać zamknięty.");
+
+                Koniec();
+                
+            }
         }
 
         private static void Test()
@@ -360,6 +458,7 @@ namespace PWR_PL_Implementator
 
         private static void Zaimplementuj_PWR_PL()
         {
+            ZapiszLOG("Zainicjalizowano implementację polonizacji: " + wersja_polonizacji);
 
             if
             (
@@ -392,6 +491,7 @@ namespace PWR_PL_Implementator
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
+                    ZapiszLOG("Kompatybilność wersji polonizacji z wersją gry została potwierdzona (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
 
                     var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
                     var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
@@ -528,6 +628,8 @@ namespace PWR_PL_Implementator
                 }
                 else
                 {
+                    ZapiszLOG("Instalowana wersja polonizacji NIE JEST kompatybilna z wersją zainstalowanej gry (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
+
                     Blad("BŁĄD: Nie można zainstalować spolszczenia, ponieważ wystąpiła niezgodność wersji spolszczenia z zainstalowaną wersją gry.");
                     Informacja("Upewnij się, że instalujesz wersję spolszczenia zgodną z aktualnie zainstalowaną wersją gry.");
                     Console.WriteLine("Wersja spolszczenia, którą próbujesz zainstalować jest przeznaczona dla wersji gry: " + kompatybilny_numerwersjigry);
@@ -538,6 +640,7 @@ namespace PWR_PL_Implementator
             }
             else
             {
+                ZapiszLOG("Folder PWR_PL został umieszczony przed próbą implementacji w niewłaściwym miejscu lub brakuje istotnych plików gry (ścieżka zainicjowanego implementatora: " + exe_sciezka + ").");
                 Blad("BŁĄD: Weryfikacja plików gry nie powiodła się. Upewnij się, że folder \"PWR_PL\" wraz całą zawartością znajduje się w głównym folderze z zainstalowaną grą Pathfinder Wrath of the Righteous. Jeśli tak jest, a mimo tego wyświetla się ten błąd, wtedy sprawdź spójność plików gry w Steam/GoG/Epic, a nastepnie spróbuj ponownie zainstalować spolszczenie.");
             }
 
@@ -546,6 +649,8 @@ namespace PWR_PL_Implementator
 
         private static void Deimplementuj_PWR_PL()
         {
+            ZapiszLOG("Zainicjalizowano deimplementację polonizacji: " + wersja_polonizacji);
+
             int ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY = 0;
 
             if
@@ -576,6 +681,7 @@ namespace PWR_PL_Implementator
                 string aktualniezainstalowanawersjagry_dane = PobierzDaneZVersionInfo("..\\Wrath_Data\\StreamingAssets\\Version.info");
 
                 string kompatybilny_numerwersjigry = kompatybilnoscspolszczenia_dane.Split(new char[] { ' ' })[3];
+                string numerzainstalowanejwersjigry = aktualniezainstalowanawersjagry_dane.Split(new char[] { ' ' })[3];
 
                 var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
                 var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
@@ -593,6 +699,9 @@ namespace PWR_PL_Implementator
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
+                    ZapiszLOG("Kompatybilność wersji polonizacji z wersją gry została potwierdzona (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Wykryto użycie zgodnego/prawidłowego implementatora w celu deimplementacji spolszczenia z zainstalowanej gry.");
+
                     Console.WriteLine("Trwa usuwanie Polskiej Lokalizacji PWR_PL: " + PobierzNumerWersjiPolonizacji() + "");
                     Console.WriteLine("Nie zamykaj tego okna i poczekaj, aż wyświetlą się kolejne informacje. Może to trochę potrwać...");
 
@@ -609,6 +718,8 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Wrath_Data\\sharedassets0.assets.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
                     }
@@ -628,6 +739,8 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Bundles\\ui.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
                     }
@@ -647,6 +760,8 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
                     }
@@ -666,13 +781,18 @@ namespace PWR_PL_Implementator
                         }
                         else
                         {
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego folderu gry z zawartością, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("Zaimplementuj_PWR_PL.exe", "") + "..\\Wrath_Data\\StreamingAssets\\Localization.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
                     }
 
                 }
                 else
-                {
+                { /*---*/
+                    ZapiszLOG("Ta wersja polonizacji NIE JEST kompatybilna z aktualnie zainstalowaną grą (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Wykryto użycie NIEzgodnego/NIEprawidłowego implementatora w celu deimplementacji spolszczenia z zainstalowanej gry.");
+
 
                     if (File.Exists("..\\Wrath_Data\\sharedassets0.assets")) { File.Delete("..\\Wrath_Data\\sharedassets0.assets"); }
                     if (File.Exists("..\\Bundles\\ui")) { File.Delete("..\\Bundles\\ui"); }
@@ -726,7 +846,9 @@ namespace PWR_PL_Implementator
                         {
                             using (Process unins000_proces = Process.Start(unins000_startInfo))
                             {
-                                unins000_proces.WaitForExit();
+                                ZapiszLOG("Automatycznie uruchomiono proces aplikacji odinstalowującej polonizację (unins000.exe).");
+
+                                //unins000_proces.WaitForExit();
                             }
                         }
                         catch
@@ -741,6 +863,7 @@ namespace PWR_PL_Implementator
             }
             else
             {
+                ZapiszLOG("Folder PWR_PL został umieszczony przed próbą implementacji w niewłaściwym miejscu lub brakuje istotnych plików gry (ścieżka zainicjowanego implementatora: " + exe_sciezka + ").");
                 Blad("BŁĄD: Weryfikacja plików gry nie powiodła się. Upewnij się, że folder \"PWR_PL\" wraz całą zawartością znajduje się w głównym folderze z zainstalowaną grą Pathfinder Wrath of the Righteous. Jeśli tak jest, a mimo tego wyświetla się ten błąd, wtedy sprawdź spójność plików gry w Steam/GoG/Epic.");
             }
 
