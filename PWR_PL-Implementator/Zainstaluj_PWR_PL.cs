@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303252119";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303260329";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -323,6 +323,7 @@ namespace PWR_PL_Implementator
                 string aktualniezainstalowanawersjagry_dane = PobierzDaneZVersionInfo("..\\Wrath_Data\\StreamingAssets\\Version.info");
 
                 string kompatybilny_numerwersjigry = kompatybilnoscspolszczenia_dane.Split(new char[] { ' ' })[3];
+                string numerzainstalowanejwersjigry = aktualniezainstalowanawersjagry_dane.Split(new char[] { ' ' })[3];
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
@@ -497,7 +498,8 @@ namespace PWR_PL_Implementator
                         }
 
 
-                        Blad("Nie można zainstalować spolszczenia, ponieważ wykryto błędy w integralności plików lokalizacyjnych gry. Istnieją pliki i/lub foldery potencjalnie stwarzające konflikty.");
+                        Blad("Nie można zainstalować spolszczenia, ponieważ wykryto błędy w integralności plików gry. Istnieją pliki i/lub foldery potencjalnie stwarzające konflikty.");
+                        Informacja("Powyższy błąd może wynikać z faktu wielokrotnych prób instalacji spolszczenia niewłaściwą metodą nałożenia jednej instalacji na drugą (zawsze przed instalacją innej wersji polonizacji należy najpierw odinstalować poprzednią).");
                         Informacja("Pliki/foldery stwarzające konflikty zostały teraz automatycznie usunięte przez implementator spolszczenia, natomiast koniecznie sprawdź spójność plików gry w Steam/GoG/Epic przed kolejną próbą uruchomienia gry lub ponowną instalacją polonizacji.");
                     }
 
@@ -506,6 +508,9 @@ namespace PWR_PL_Implementator
                 {
                     Blad("BŁĄD: Nie można zainstalować spolszczenia, ponieważ wystąpiła niezgodność wersji spolszczenia z zainstalowaną wersją gry.");
                     Informacja("Upewnij się, że instalujesz wersję spolszczenia zgodną z aktualnie zainstalowaną wersją gry.");
+                    Console.WriteLine("Wersja spolszczenia, którą próbujesz zainstalować jest przeznaczona dla wersji gry: " + kompatybilny_numerwersjigry);
+                    Console.WriteLine("Posiadasz zainstalowaną wersję gry: " + numerzainstalowanejwersjigry);
+
                 }
 
             }
@@ -519,9 +524,91 @@ namespace PWR_PL_Implementator
         
         private static void Odinstaluj_PWR_PL()
         {
+            if
+            (
+            File.Exists("..\\Wrath_Data\\StreamingAssets\\Version.info")
+            &&
+            File.Exists("..\\Wrath.exe")
+            &&
+            File.Exists("..\\Wrath_Data\\sharedassets0.assets")
+            &&
+            File.Exists("..\\Bundles\\ui")
+            &&
+            Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\")
+            &&
+            File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")
+            &&
+            Directory.Exists("Implementacja\\Wrath_Data\\StreamingAssets\\Localization\\")
+            &&
+            File.Exists("Implementacja\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")
+            &&
+            File.Exists("Konfiguracja\\deDE-default-general_settings.json")
+            &&
+            File.Exists("Kompatybilnosc\\Version.info")
+            )
+            {
+
+                string kompatybilnoscspolszczenia_dane = PobierzDaneZVersionInfo("Kompatybilnosc\\Version.info");
+                string aktualniezainstalowanawersjagry_dane = PobierzDaneZVersionInfo("..\\Wrath_Data\\StreamingAssets\\Version.info");
+
+                string kompatybilny_numerwersjigry = kompatybilnoscspolszczenia_dane.Split(new char[] { ' ' })[3];
+
+                var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
+                var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
+                var kopiezapasowe_IntroductoryText = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+
+                var kopiezapasowe_Localization = WyszukajFolderyKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+
+                /*
+                for (int il1 = 0; il1 < listasciezek_wykrytekonflikty.Count; il1++)
+                {
+                    Console.WriteLine("[DEBUG] listasciezek_wykrytekonflikty[" + il1 + "]==" + listasciezek_wykrytekonflikty[il1]);
+                }
+                */
+
+
+                if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
+                {
+                    if (File.Exists("Implementacja\\Wrath_Data\\sharedassets0.assets") == true)
+                    {
+
+                    }
+
+                }
+                else
+                {
+
+                    if (File.Exists("..\\Wrath_Data\\sharedassets0.assets")) { File.Delete("..\\Wrath_Data\\sharedassets0.assets"); }
+                    if (File.Exists("..\\Bundles\\ui")) { File.Delete("..\\Bundles\\ui"); }
+                    if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")) { File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json"); }
+
+                    if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\")) { Directory.Delete("..\\Wrath_Data\\StreamingAssets\\Localization\\", true); }
+
+
+                    for (int il2 = 0; il2 < listasciezek_wykrytekonflikty.Count; il2++)
+                    {
+                        if (File.Exists(listasciezek_wykrytekonflikty[il2])) { File.Delete(listasciezek_wykrytekonflikty[il2]); }
+                        if (Directory.Exists(listasciezek_wykrytekonflikty[il2])) { Directory.Delete(listasciezek_wykrytekonflikty[il2], true); }
+                    }
+
+
+                    Blad("Wykryto błędy w integralności plików gry. Istnieją pliki i/lub foldery potencjalnie stwarzające konflikty.");
+                    Informacja("Powyższy błąd może wynikać z faktu próby użycia deinstalatora nie z tej wersji spolszczenia, która aktualnie była zainstalowana.");
+                    Informacja("Pliki/foldery stwarzające konflikty zostały teraz automatycznie usunięte przez deimplementator spolszczenia, natomiast koniecznie sprawdź spójność plików gry w Steam/GoG/Epic przed kolejną próbą uruchomienia gry lub ponowną instalacją polonizacji.");
+                
+                }
+
+                //tu wbudować zmianę języka gry na enGB
+
+            }
+            else
+            {
+                Blad("BŁĄD: Weryfikacja plików gry nie powiodła się. Upewnij się, że folder \"PWR_PL\" wraz całą zawartością znajduje się w głównym folderze z zainstalowaną grą Pathfinder Wrath of the Righteous. Jeśli tak jest, a mimo tego wyświetla się ten błąd, wtedy sprawdź spójność plików gry w Steam/GoG/Epic.");
+            }
 
 
             Koniec();
+
         }
 
     }
