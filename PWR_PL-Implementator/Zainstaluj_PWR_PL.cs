@@ -25,7 +25,7 @@ namespace PWR_PL_Implementator
 {
     class PWR_PL_Implementator
     {
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303260450";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303261848";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
@@ -38,27 +38,27 @@ namespace PWR_PL_Implementator
 
         private static void Blad(string tresc)
         {
-            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(tresc);
             Console.ResetColor();
 
         }
         private static void Sukces(string tresc)
         {
-            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(tresc);
             Console.ResetColor();
 
         }
         private static void Sukces2(string tresc)
         {
-            Console.BackgroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine(tresc);
             Console.ResetColor();
         }
         private static void Informacja(string tresc)
         {
-            Console.BackgroundColor = ConsoleColor.Magenta;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine(tresc);
             Console.ResetColor();
         }
@@ -177,7 +177,7 @@ namespace PWR_PL_Implementator
             foreach (FileInfo fi in folderzrodlowy_di.GetFiles())
             {
                 //Console.WriteLine(@"[DEBUG] Kopiowanie {0}\{1}", folderdocelowy_di.FullName, fi.Name);
-                
+
                 fi.CopyTo(Path.Combine(folderdocelowy_di.ToString(), fi.Name), true);
             }
 
@@ -306,7 +306,7 @@ namespace PWR_PL_Implementator
             Console.Title = _PWR_PL_naglowek;
 
             string separator_naglowka = "";
-            for (int s1 = 0; s1 < _PWR_PL_naglowek.Length+4; s1++)
+            for (int s1 = 0; s1 < _PWR_PL_naglowek.Length + 4; s1++)
             {
                 separator_naglowka += "-";
             }
@@ -338,11 +338,17 @@ namespace PWR_PL_Implementator
 
         private static void Test()
         {
+            /*
             DirectoryInfo test_di = new DirectoryInfo("..\\Wrath_Data\\StreamingAssets\\Version.info");
 
             Console.WriteLine("[DEBUG] test_di == " + test_di);
 
             Console.WriteLine("[DEBUG] Numer wersji polonizacji: " + PobierzNumerWersjiPolonizacji());
+            */
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Test.");
+            Console.ResetColor();
 
             Koniec();
         }
@@ -532,7 +538,7 @@ namespace PWR_PL_Implementator
 
             Koniec();
         }
-        
+
         private static void Odinstaluj_PWR_PL()
         {
             int ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY = 0;
@@ -680,7 +686,7 @@ namespace PWR_PL_Implementator
                     Blad("Wykryto błędy w integralności plików gry. Istnieją pliki i/lub foldery potencjalnie stwarzające konflikty.");
                     Informacja("Powyższy błąd może wynikać z faktu próby użycia deinstalatora nie z tej wersji spolszczenia, która aktualnie była zainstalowana.");
                     Informacja("Pliki/foldery stwarzające konflikty zostały teraz automatycznie usunięte przez deimplementator spolszczenia, natomiast koniecznie sprawdź spójność plików gry w Steam/GoG/Epic przed kolejną próbą uruchomienia gry lub ponowną instalacją polonizacji.");
-                
+
                 }
 
                 ZmienJezykWPlikuKonfiguracyjnymGry("deDE", "enGB");
@@ -694,6 +700,34 @@ namespace PWR_PL_Implementator
                     Informacja("Polska Lokalizacja PWR " + PobierzNumerWersjiPolonizacji() + " została usunięta z gry Pathfinder Wrath of the Righteous " + kompatybilny_numerwersjigry + ", natomiast deimplementator spolszczenia napotkał przynajmniej jeden krytyczny wyjątek i wyniku tego nie zdołał przywrócić wszystkich plików gry do oryginalnego stanu.");
                     Blad("Przed próbą uruchomienia gry koniecznie sprawdź spójność plików gry w Steam/GoG/Epic.");
                 }
+
+
+                if (File.Exists("unins000.exe") && File.Exists("unins000.dat"))
+                {
+                    ProcessStartInfo unins000_startInfo = new ProcessStartInfo();
+                    unins000_startInfo.CreateNoWindow = false;
+                    unins000_startInfo.UseShellExecute = false;
+                    unins000_startInfo.FileName = "unins000.exe";
+                    unins000_startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    //unins000_startInfo.Arguments = "";
+
+
+
+                    try
+                    {
+                        using (Process unins000_proces = Process.Start(unins000_startInfo))
+                        {
+                            unins000_proces.WaitForExit();
+                        }
+                    }
+                    catch
+                    {
+                        Blad("BŁĄD: Wystąpił nieoczekiwany problem z dostępem do aplikacji odinstalowującej (unins000.exe). Spróbuj uruchomić plik \"unins000.exe\" znajdujący się w folderze \"PWR_PL\" z uprawnieniami Administratora.");
+                    }
+
+                }
+
+
             }
             else
             {
