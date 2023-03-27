@@ -18,15 +18,38 @@ using System.ComponentModel;
 
 using System.ComponentModel.Design.Serialization;
 using System.Collections;
-
-
+using Microsoft.Win32;
 
 namespace PWR_PL_Implementator
 {
+    public class WersjaOS
+    {
+        public string Nazwa { get; set; }
+        public string WersjaGlowna { get; set; }
+        public string Build { get; set; }
+        public string Podbuild { get; set; }
+        public string ServicePack { get; set; }
+
+        public override string ToString()
+        {
+            string wyswietlany_string;
+            if (Podbuild != "" && Podbuild != " ")
+            {
+                wyswietlany_string = Nazwa + " " + WersjaGlowna + " " + Build + "." + Podbuild + " " + ServicePack; ;
+            }
+            else
+            {
+                wyswietlany_string = Nazwa + " " + WersjaGlowna + " " + Build + " " + ServicePack; ;
+            }
+
+            return wyswietlany_string;
+        }
+    }
+
     class PWR_PL_Implementator
     {
         readonly static string exe_sciezka = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL by Revok (2023), kompilacja 202303262304";
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja 202303271540 by Revok";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
         
         readonly static bool rejestruj_log = true; // jeśli zmienna jest ustawiona jako "true", wtedy rejestrowane są zdarzenia implementatora do pliku: %APPDATA$\PWR_PL\PWR_PL.log
@@ -34,6 +57,61 @@ namespace PWR_PL_Implementator
         static StreamWriter plikLOG_sw;
 
         static List<string> listasciezek_wykrytekonflikty = new List<string>();
+
+        private static WersjaOS WersjaUzywanegoOS()
+        {
+            Console.WriteLine("[DEBUG] Environment.OSVersion==" + Environment.OSVersion);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Platform==" + Environment.OSVersion.Platform);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Version==" + Environment.OSVersion.Version);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Version.Major==" + Environment.OSVersion.Version.Major);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Version.MajorRevision==" + Environment.OSVersion.Version.MajorRevision);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Version.Minor==" + Environment.OSVersion.Version.Minor);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Version.MinorRevision==" + Environment.OSVersion.Version.MinorRevision);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Version.Revision==" + Environment.OSVersion.Version.Revision);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.Version.Build==" + Environment.OSVersion.Version.Build);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.ServicePack==" + Environment.OSVersion.ServicePack);
+            Console.WriteLine("[DEBUG] Environment.OSVersion.VersionString==" + Environment.OSVersion.VersionString);
+            string glownanazwa_OS;
+            int glownynumerwersji_OS = Environment.OSVersion.Version.Major;
+            int numerbuildu_OS = Environment.OSVersion.Version.Build;
+            int podnumerbuildu_OS = -1;
+
+            string[] pelnynumerwersji_OS = Environment.OSVersion.Version.ToString().Split(new char[] { '.' });
+
+
+            if (pelnynumerwersji_OS.Length >= 4)
+            {
+
+                if (pelnynumerwersji_OS[0] == "10")
+                {
+                    if (numerbuildu_OS < 22000)
+                    {
+                        glownynumerwersji_OS = 10;
+                    }
+                    else if (numerbuildu_OS >= 22000)
+                    {
+                        glownynumerwersji_OS = 11;
+                    }
+                }
+            }
+
+            if (Environment.OSVersion.ToString().Contains("Microsoft Windows") == true)
+            {
+                glownanazwa_OS = "Microsoft Windows";
+
+                podnumerbuildu_OS = int.Parse(Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion").GetValue("UBR").ToString());
+
+            }
+            else
+            {
+                glownanazwa_OS = "NULL";
+            }
+
+            WersjaOS wersja_OS = new WersjaOS { Nazwa = glownanazwa_OS, WersjaGlowna = glownynumerwersji_OS.ToString(), Build = "build " + numerbuildu_OS.ToString(), Podbuild = podnumerbuildu_OS.ToString(), ServicePack = Environment.OSVersion.ServicePack };
+
+            return wersja_OS;
+
+        }
 
         private static string PobierzAktualnaDateICzas()
         {
@@ -329,20 +407,6 @@ namespace PWR_PL_Implementator
                     //Console.WriteLine("[DEBUG] plik==" + plik);
                 }
 
-                if (listasciezek_wykrytekonflikty.Count > 0)
-                {
-                    string listasciezek_string = "";
-
-                    for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
-                    {
-                        int np = liwr + 1;
-
-                        listasciezek_string = listasciezek_string + "\n" + np.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
-                    }
-
-                    ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
-                }
-
             }
 
             return rezultat;
@@ -368,19 +432,6 @@ namespace PWR_PL_Implementator
                     //Console.WriteLine("[DEBUG] folder==" + folder);
                 }
 
-                if (listasciezek_wykrytekonflikty.Count > 0)
-                {
-                    string listasciezek_string = "";
-
-                    for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
-                    {
-                        int np = liwr + 1;
-
-                        listasciezek_string = listasciezek_string + "\n" + np.ToString() + ") " + listasciezek_wykrytekonflikty[liwr];
-                    }
-
-                    ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
-                }
 
             }
 
@@ -457,6 +508,8 @@ namespace PWR_PL_Implementator
             Console.WriteLine("Test.");
             Console.ResetColor();
 
+            Console.WriteLine("OS: " + WersjaUzywanegoOS());
+
             Koniec();
         }
 
@@ -502,6 +555,20 @@ namespace PWR_PL_Implementator
                     var kopiezapasowe_IntroductoryText = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
 
                     var kopiezapasowe_Localization = WyszukajFolderyKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+
+                    if (listasciezek_wykrytekonflikty.Count > 0)
+                    {
+                        string listasciezek_string = "";
+
+                        for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
+                        {
+                            int np = liwr + 1;
+
+                            listasciezek_string = listasciezek_string + "\n           " + np.ToString() + ") " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\" + listasciezek_wykrytekonflikty[liwr];
+                        }
+
+                        ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
+                    }
 
                     /*
                     for (int il1 = 0; il1 < listasciezek_wykrytekonflikty.Count; il1++)
@@ -692,6 +759,20 @@ namespace PWR_PL_Implementator
                 var kopiezapasowe_IntroductoryText = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
 
                 var kopiezapasowe_Localization = WyszukajFolderyKopiiZapasowych("..\\Wrath_Data\\StreamingAssets\\");
+
+                if (listasciezek_wykrytekonflikty.Count > 0)
+                {
+                    string listasciezek_string = "";
+
+                    for (int liwr = 0; liwr < listasciezek_wykrytekonflikty.Count; liwr++)
+                    {
+                        int np = liwr + 1;
+
+                        listasciezek_string = listasciezek_string + "\n           " + np.ToString() + ") " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\" + listasciezek_wykrytekonflikty[liwr];
+                    }
+
+                    ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
+                }
 
                 /*
                 for (int il1 = 0; il1 < listasciezek_wykrytekonflikty.Count; il1++)
