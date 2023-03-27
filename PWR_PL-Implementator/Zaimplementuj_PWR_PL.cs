@@ -48,10 +48,10 @@ namespace PWR_PL_Implementator
 
     class PWR_PL_Implementator
     {
-        readonly static long _kompilacja = 202303272139;
+        readonly static long _kompilacja = 202303272229;
         readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja " + _kompilacja + " by Revok";
 
-        readonly static string exe_sciezka = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        readonly static string exe_sciezka = AppDomain.CurrentDomain.BaseDirectory + "Zaimplementuj_PWR_PL.exe";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
         
         readonly static bool rejestruj_log = true; // jeśli zmienna jest ustawiona jako "true", wtedy rejestrowane są zdarzenia implementatora do pliku: %APPDATA$\PWR_PL\PWR_PL.log
@@ -252,7 +252,7 @@ namespace PWR_PL_Implementator
 
         private static void Koniec()
         {
-            ZapiszLOG("Zakończono działanie implementatora (kompilacja " + _kompilacja + ") w OS: " + WersjaUzywanegoOS());
+            ZapiszLOG("Zakończono działanie implementatora (kompilacja " + _kompilacja + ") w OS: " + WersjaUzywanegoOS() + "w: " + exe_sciezka);
             ZamknijRejestratorLOG();
 
             Console.WriteLine("Kliknij dowolny klawisz, aby zamknąć to okno.");
@@ -541,7 +541,7 @@ namespace PWR_PL_Implementator
 
                 InicjalizujRejestratorLOG();
 
-                ZapiszLOG("Uruchomiono implementator (kompilacja " + _kompilacja + ") w OS: " + WersjaUzywanegoOS());
+                ZapiszLOG("Uruchomiono implementator (kompilacja " + _kompilacja + ") w OS: " + WersjaUzywanegoOS() + " w: " + exe_sciezka);
 
 
                 if (proces_implementatora.Length <= 1)
@@ -615,7 +615,7 @@ namespace PWR_PL_Implementator
 
         private static void Zaimplementuj_PWR_PL()
         {
-            ZapiszLOG("Zainicjalizowano implementację polonizacji: " + wersja_polonizacji + " w OS: " + WersjaUzywanegoOS());
+            ZapiszLOG("Zainicjalizowano implementację polonizacji: " + wersja_polonizacji + " w OS: " + WersjaUzywanegoOS() + " w: " + exe_sciezka);
 
             if
             (
@@ -820,7 +820,7 @@ namespace PWR_PL_Implementator
 
         private static void Deimplementuj_PWR_PL()
         {
-            ZapiszLOG("Zainicjalizowano deimplementację polonizacji: " + wersja_polonizacji + " w OS: " + WersjaUzywanegoOS());
+            ZapiszLOG("Zainicjalizowano deimplementację polonizacji: " + wersja_polonizacji + " w OS: " + WersjaUzywanegoOS() + "w: " + exe_sciezka);
 
             int ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY = 0;
 
