@@ -48,7 +48,7 @@ namespace PWR_PL_Implementator
 
     class PWR_PL_Implementator
     {
-        readonly static long _kompilacja = 202303271700;
+        readonly static long _kompilacja = 202303271712;
         readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja " + _kompilacja + " by Revok";
 
         readonly static string exe_sciezka = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -84,6 +84,7 @@ namespace PWR_PL_Implementator
             +-----------------------------------------------------------+
             */
 
+            /*
             Console.WriteLine("[DEBUG] Environment.OSVersion==" + Environment.OSVersion);
             Console.WriteLine("[DEBUG] Environment.OSVersion.Platform==" + Environment.OSVersion.Platform);
             Console.WriteLine("[DEBUG] Environment.OSVersion.Version==" + Environment.OSVersion.Version);
@@ -95,6 +96,8 @@ namespace PWR_PL_Implementator
             Console.WriteLine("[DEBUG] Environment.OSVersion.Version.Build==" + Environment.OSVersion.Version.Build);
             Console.WriteLine("[DEBUG] Environment.OSVersion.ServicePack==" + Environment.OSVersion.ServicePack);
             Console.WriteLine("[DEBUG] Environment.OSVersion.VersionString==" + Environment.OSVersion.VersionString);
+            */
+
             string glownanazwa_OS;
             string glowneoznaczeniewersji_OS = "NULL";
             int numerbuildu_OS = Environment.OSVersion.Version.Build;
@@ -249,7 +252,7 @@ namespace PWR_PL_Implementator
 
         private static void Koniec()
         {
-            ZapiszLOG("Zakończono działanie implementatora (kompilacja " + _kompilacja + ").");
+            ZapiszLOG("Zakończono działanie implementatora (kompilacja " + _kompilacja + ") w OS: " + WersjaUzywanegoOS());
             ZamknijRejestratorLOG();
 
             Console.WriteLine("Kliknij dowolny klawisz, aby zamknąć to okno.");
@@ -537,6 +540,8 @@ namespace PWR_PL_Implementator
                 Process[] proces_implementatora = Process.GetProcessesByName("Zaimplementuj_PWR_PL");
 
                 InicjalizujRejestratorLOG();
+
+                ZapiszLOG("Uruchomiono implementator (kompilacja " + _kompilacja + ") w OS: " + WersjaUzywanegoOS());
 
 
                 if (proces_implementatora.Length <= 1)
