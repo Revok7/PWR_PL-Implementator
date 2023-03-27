@@ -48,7 +48,7 @@ namespace PWR_PL_Implementator
 
     class PWR_PL_Implementator
     {
-        readonly static long _kompilacja = 202303271712;
+        readonly static long _kompilacja = 202303272139;
         readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja " + _kompilacja + " by Revok";
 
         readonly static string exe_sciezka = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -799,12 +799,12 @@ namespace PWR_PL_Implementator
                 }
                 else
                 {
-                    ZapiszLOG("Instalowana wersja polonizacji NIE JEST kompatybilna z wersją zainstalowanej gry (" + wersja_polonizacji + " ---> " + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Instalowana wersja polonizacji (" + wersja_polonizacji + ") jest przeznaczona dla wersji gry " + kompatybilny_numerwersjigry + " i NIE JEST kompatybilna z wersją zainstalowanej gry (" + numerzainstalowanejwersjigry + ").");
 
-                    Blad("BŁĄD: Nie można zainstalować spolszczenia, ponieważ wystąpiła niezgodność wersji spolszczenia z zainstalowaną wersją gry.");
-                    Informacja("Upewnij się, że instalujesz wersję spolszczenia zgodną z aktualnie zainstalowaną wersją gry.");
-                    Console.WriteLine("Wersja spolszczenia, którą próbujesz zainstalować jest przeznaczona dla wersji gry: " + kompatybilny_numerwersjigry);
-                    Console.WriteLine("Posiadasz zainstalowaną wersję gry: " + numerzainstalowanejwersjigry);
+                    Blad("BŁĄD: Nie można zainstalować spolszczenia, ponieważ wystąpiła niezgodność wersji polonizacji z zainstalowaną wersją gry.");
+                    Informacja("Upewnij się, że instalujesz wersję polonizacji zgodną z aktualnie zainstalowaną wersją gry.");
+                    Blad("Wersja spolszczenia, którą próbujesz zainstalować jest przeznaczona dla wersji gry: " + kompatybilny_numerwersjigry);
+                    Blad("Posiadasz zainstalowaną wersję gry: " + numerzainstalowanejwersjigry);
 
                 }
 
@@ -975,8 +975,8 @@ namespace PWR_PL_Implementator
                 }
                 else
                 { /*---*/
-                    ZapiszLOG("Ta wersja polonizacji NIE JEST kompatybilna z aktualnie zainstalowaną grą (" + wersja_polonizacji + " ---> " + numerzainstalowanejwersjigry + ").");
-                    ZapiszLOG("Wykryto użycie NIEzgodnego/NIEprawidłowego implementatora w celu deimplementacji spolszczenia z zainstalowanej gry.");
+                    ZapiszLOG("Użyta wersja polonizacji (" + wersja_polonizacji + ") w celu deimplementacji NIE JEST kompatybilna z aktualnie zainstalowaną wersją gry (" + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Wykryto użycie NIEzgodnego/NIE tego samego implementatora w celu deimplementacji spolszczenia z zainstalowanej gry.");
 
 
                     if (File.Exists("..\\Wrath_Data\\sharedassets0.assets")) { File.Delete("..\\Wrath_Data\\sharedassets0.assets"); }
