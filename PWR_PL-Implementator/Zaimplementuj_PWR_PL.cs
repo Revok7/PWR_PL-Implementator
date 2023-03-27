@@ -48,8 +48,10 @@ namespace PWR_PL_Implementator
 
     class PWR_PL_Implementator
     {
+        readonly static long _kompilacja = 202303271700;
+        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja " + _kompilacja + " by Revok";
+
         readonly static string exe_sciezka = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja 202303271540 by Revok";
         readonly static string wersja_polonizacji = PobierzNumerWersjiPolonizacji();
         
         readonly static bool rejestruj_log = true; // jeśli zmienna jest ustawiona jako "true", wtedy rejestrowane są zdarzenia implementatora do pliku: %APPDATA$\PWR_PL\PWR_PL.log
@@ -60,6 +62,28 @@ namespace PWR_PL_Implementator
 
         private static WersjaOS WersjaUzywanegoOS()
         {
+            /*
+            +-----------------------------------------------------------+
+|           | OS              | Platform     | Major | Minor | Build    |
+            +-----------------------------------------------------------+
+            | Windows 95      | Win32Windows |   4   |   0   |          |
+            | Windows 98      | Win32Windows |   4   |  10   |          |
+            | Windows Me      | Win32Windows |   4   |  90   |          |
+            | Windows NT 4.0  | Win32NT      |   4   |   0   |          |
+            | Windows 2000    | Win32NT      |   5   |   0   |          |
+            | Windows XP      | Win32NT      |   5   |   1   |          |
+            | Windows 2003    | Win32NT      |   5   |   2   |          |
+            | Windows Vista   | Win32NT      |   6   |   0   |          |
+            | Windows 2008    | Win32NT      |   6   |   0   |          |
+            | Windows 7       | Win32NT      |   6   |   1   |          |
+            | Windows 2008 R2 | Win32NT      |   6   |   1   |          |
+            | Windows 8       | Win32NT      |   6   |   2   |          |
+            | Windows 8.1     | Win32NT      |   6   |   3   |          |
+            | Windows 10      | Win32NT      |  10   |   0   | <22000   |
+            | Windows 11      | Win32NT      |  10   |   0   |  22000<= |
+            +-----------------------------------------------------------+
+            */
+
             Console.WriteLine("[DEBUG] Environment.OSVersion==" + Environment.OSVersion);
             Console.WriteLine("[DEBUG] Environment.OSVersion.Platform==" + Environment.OSVersion.Platform);
             Console.WriteLine("[DEBUG] Environment.OSVersion.Version==" + Environment.OSVersion.Version);
@@ -72,13 +96,13 @@ namespace PWR_PL_Implementator
             Console.WriteLine("[DEBUG] Environment.OSVersion.ServicePack==" + Environment.OSVersion.ServicePack);
             Console.WriteLine("[DEBUG] Environment.OSVersion.VersionString==" + Environment.OSVersion.VersionString);
             string glownanazwa_OS;
-            int glownynumerwersji_OS = Environment.OSVersion.Version.Major;
+            string glowneoznaczeniewersji_OS = "NULL";
             int numerbuildu_OS = Environment.OSVersion.Version.Build;
             int podnumerbuildu_OS = -1;
 
             string[] pelnynumerwersji_OS = Environment.OSVersion.Version.ToString().Split(new char[] { '.' });
 
-
+            /*
             if (pelnynumerwersji_OS.Length >= 4)
             {
 
@@ -94,6 +118,71 @@ namespace PWR_PL_Implementator
                     }
                 }
             }
+            */
+
+
+            if (Environment.OSVersion.Platform.ToString() == "Win32NT")
+            {
+                if (Environment.OSVersion.Version.Major == 4 && Environment.OSVersion.Version.Minor == 0)
+                {
+                    glowneoznaczeniewersji_OS = "NT 4.0";
+                }
+                else if (Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor == 0)
+                {
+                    glowneoznaczeniewersji_OS = "2000";
+                }
+                else if (Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor == 1)
+                {
+                    glowneoznaczeniewersji_OS = "XP";
+                }
+                else if (Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor == 2)
+                {
+                    glowneoznaczeniewersji_OS = "2003";
+                }
+                else if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 0)
+                {
+                    glowneoznaczeniewersji_OS = "Vista/2008";
+                }
+                else if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
+                {
+                    glowneoznaczeniewersji_OS = "7/2008 R2";
+                }
+                else if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 2)
+                {
+                    glowneoznaczeniewersji_OS = "8";
+                }
+                else if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 3)
+                {
+                    glowneoznaczeniewersji_OS = "8.1";
+                }
+                else if (Environment.OSVersion.Version.Major == 10 && Environment.OSVersion.Version.Minor == 0)
+                {
+                    if (Environment.OSVersion.Version.Build < 22000)
+                    {
+                        glowneoznaczeniewersji_OS = "10";
+                    }
+                    else if (Environment.OSVersion.Version.Build >= 22000)
+                    {
+                        glowneoznaczeniewersji_OS = "11";
+                    }
+                }
+            }
+            else if (Environment.OSVersion.Platform.ToString() == "Win32Windows")
+            {
+                if (Environment.OSVersion.Version.Major == 4 && Environment.OSVersion.Version.Minor == 0)
+                {
+                    glowneoznaczeniewersji_OS = "95";
+                }
+                else if (Environment.OSVersion.Version.Major == 4 && Environment.OSVersion.Version.Minor == 10)
+                {
+                    glowneoznaczeniewersji_OS = "98";
+                }
+                else if (Environment.OSVersion.Version.Major == 4 && Environment.OSVersion.Version.Minor == 90)
+                {
+                    glowneoznaczeniewersji_OS = "Me";
+                }
+            }
+
 
             if (Environment.OSVersion.ToString().Contains("Microsoft Windows") == true)
             {
@@ -107,7 +196,7 @@ namespace PWR_PL_Implementator
                 glownanazwa_OS = "NULL";
             }
 
-            WersjaOS wersja_OS = new WersjaOS { Nazwa = glownanazwa_OS, WersjaGlowna = glownynumerwersji_OS.ToString(), Build = "build " + numerbuildu_OS.ToString(), Podbuild = podnumerbuildu_OS.ToString(), ServicePack = Environment.OSVersion.ServicePack };
+            WersjaOS wersja_OS = new WersjaOS { Nazwa = glownanazwa_OS, WersjaGlowna = glowneoznaczeniewersji_OS, Build = "build " + numerbuildu_OS.ToString(), Podbuild = podnumerbuildu_OS.ToString(), ServicePack = Environment.OSVersion.ServicePack };
 
             return wersja_OS;
 
@@ -160,7 +249,7 @@ namespace PWR_PL_Implementator
 
         private static void Koniec()
         {
-            ZapiszLOG("Zakończono działanie implementatora.");
+            ZapiszLOG("Zakończono działanie implementatora (kompilacja " + _kompilacja + ").");
             ZamknijRejestratorLOG();
 
             Console.WriteLine("Kliknij dowolny klawisz, aby zamknąć to okno.");
@@ -452,11 +541,12 @@ namespace PWR_PL_Implementator
 
                 if (proces_implementatora.Length <= 1)
                 {
-                    string separator_naglowka = "";
-                    for (int s1 = 0; s1 < _PWR_PL_naglowek.Length + 4; s1++)
+                    string separator_naglowka = "+";
+                    for (int s1 = 0; s1 < _PWR_PL_naglowek.Length + 2; s1++)
                     {
                         separator_naglowka += "-";
                     }
+                    separator_naglowka = separator_naglowka += "+";
 
                     Console.WriteLine(separator_naglowka);
                     Console.WriteLine("| " + _PWR_PL_naglowek + " |");
@@ -506,16 +596,21 @@ namespace PWR_PL_Implementator
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Test.");
-            Console.ResetColor();
+
+
 
             Console.WriteLine("OS: " + WersjaUzywanegoOS());
 
+
+
+
+            Console.ResetColor();
             Koniec();
         }
 
         private static void Zaimplementuj_PWR_PL()
         {
-            ZapiszLOG("Zainicjalizowano implementację polonizacji: " + wersja_polonizacji);
+            ZapiszLOG("Zainicjalizowano implementację polonizacji: " + wersja_polonizacji + " w OS: " + WersjaUzywanegoOS());
 
             if
             (
@@ -548,7 +643,7 @@ namespace PWR_PL_Implementator
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
-                    ZapiszLOG("Kompatybilność wersji polonizacji z wersją gry została potwierdzona (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Kompatybilność wersji polonizacji z wersją gry została potwierdzona (" + wersja_polonizacji + " ---> " + numerzainstalowanejwersjigry + ").");
 
                     var kopiezapasowe_sharedassets0assets = WyszukajPlikiKopiiZapasowych("..\\Wrath_Data\\");
                     var kopiezapasowe_Bundlesui = WyszukajPlikiKopiiZapasowych("..\\Bundles\\");
@@ -564,7 +659,7 @@ namespace PWR_PL_Implementator
                         {
                             int np = liwr + 1;
 
-                            listasciezek_string = listasciezek_string + "\n           " + np.ToString() + ") " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\" + listasciezek_wykrytekonflikty[liwr];
+                            listasciezek_string = listasciezek_string + "\n                      " + np.ToString() + ") " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\" + listasciezek_wykrytekonflikty[liwr];
                         }
 
                         ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
@@ -699,7 +794,7 @@ namespace PWR_PL_Implementator
                 }
                 else
                 {
-                    ZapiszLOG("Instalowana wersja polonizacji NIE JEST kompatybilna z wersją zainstalowanej gry (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Instalowana wersja polonizacji NIE JEST kompatybilna z wersją zainstalowanej gry (" + wersja_polonizacji + " ---> " + numerzainstalowanejwersjigry + ").");
 
                     Blad("BŁĄD: Nie można zainstalować spolszczenia, ponieważ wystąpiła niezgodność wersji spolszczenia z zainstalowaną wersją gry.");
                     Informacja("Upewnij się, że instalujesz wersję spolszczenia zgodną z aktualnie zainstalowaną wersją gry.");
@@ -720,7 +815,7 @@ namespace PWR_PL_Implementator
 
         private static void Deimplementuj_PWR_PL()
         {
-            ZapiszLOG("Zainicjalizowano deimplementację polonizacji: " + wersja_polonizacji);
+            ZapiszLOG("Zainicjalizowano deimplementację polonizacji: " + wersja_polonizacji + " w OS: " + WersjaUzywanegoOS());
 
             int ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY = 0;
 
@@ -768,7 +863,7 @@ namespace PWR_PL_Implementator
                     {
                         int np = liwr + 1;
 
-                        listasciezek_string = listasciezek_string + "\n           " + np.ToString() + ") " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\" + listasciezek_wykrytekonflikty[liwr];
+                        listasciezek_string = listasciezek_string + "\n                      " + np.ToString() + ") " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\" + listasciezek_wykrytekonflikty[liwr];
                     }
 
                     ZapiszLOG("Znaleziono następujące elementy kopii zapasowych gry:" + listasciezek_string);
@@ -784,7 +879,7 @@ namespace PWR_PL_Implementator
 
                 if (kompatybilnoscspolszczenia_dane == aktualniezainstalowanawersjagry_dane)
                 {
-                    ZapiszLOG("Kompatybilność wersji polonizacji z wersją gry została potwierdzona (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Kompatybilność wersji polonizacji z wersją gry została potwierdzona (" + wersja_polonizacji + " ---> " + numerzainstalowanejwersjigry + ").");
                     ZapiszLOG("Wykryto użycie zgodnego/prawidłowego implementatora w celu deimplementacji spolszczenia z zainstalowanej gry.");
 
                     Console.WriteLine("Trwa usuwanie Polskiej Lokalizacji PWR_PL: " + PobierzNumerWersjiPolonizacji() + "");
@@ -875,7 +970,7 @@ namespace PWR_PL_Implementator
                 }
                 else
                 { /*---*/
-                    ZapiszLOG("Ta wersja polonizacji NIE JEST kompatybilna z aktualnie zainstalowaną grą (" + wersja_polonizacji + " --->" + numerzainstalowanejwersjigry + ").");
+                    ZapiszLOG("Ta wersja polonizacji NIE JEST kompatybilna z aktualnie zainstalowaną grą (" + wersja_polonizacji + " ---> " + numerzainstalowanejwersjigry + ").");
                     ZapiszLOG("Wykryto użycie NIEzgodnego/NIEprawidłowego implementatora w celu deimplementacji spolszczenia z zainstalowanej gry.");
 
 
