@@ -48,7 +48,7 @@ namespace PWR_PL_Implementator
 
     class PWR_PL_Implementator
     {
-        readonly static long _kompilacja = 202303272229;
+        readonly static long _kompilacja = 202311211824;
         readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja " + _kompilacja + " by Revok";
 
         readonly static string exe_sciezka = AppDomain.CurrentDomain.BaseDirectory + "Zaimplementuj_PWR_PL.exe";
@@ -750,12 +750,23 @@ namespace PWR_PL_Implementator
                             File.Move("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry);
                         }
 
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json") == true)
+                        {
+                            if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == false)
+                            {
+                                File.Move("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json.ORIG.BAK-" + kompatybilny_numerwersjigry);
+                            }
+                        }
+
 
                         SkopiujFolderWrazZZawartoscia("Implementacja\\Wrath_Data\\StreamingAssets\\Localization\\", "..\\Wrath_Data\\StreamingAssets\\Localization\\");
 
                         File.Copy("Implementacja\\Wrath_Data\\StreamingAssets\\IntroductoryText.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json");
 
-
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == true)
+                        {
+                            File.Copy("Implementacja\\Wrath_Data\\StreamingAssets\\IntroductoryText.json", "..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json");
+                        }
 
                         if (File.Exists(APPDATA("..\\LocalLow\\Owlcat Games\\Pathfinder Wrath Of The Righteous\\general_settings.json")) == true)
                         {
@@ -779,7 +790,15 @@ namespace PWR_PL_Implementator
 
                         if (File.Exists("..\\Wrath_Data\\sharedassets0.assets")) { File.Delete("..\\Wrath_Data\\sharedassets0.assets"); }
                         if (File.Exists("..\\Bundles\\ui")) { File.Delete("..\\Bundles\\ui"); }
-                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")) { File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json"); }
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json"))
+                        {
+                            File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json");
+
+                            if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json") == true)
+                            {
+                                File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json");
+                            }
+                        }
 
                         if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\")) { Directory.Delete("..\\Wrath_Data\\StreamingAssets\\Localization\\", true); }
 
@@ -938,6 +957,11 @@ namespace PWR_PL_Implementator
                             File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json");
                         }
 
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json") == true)
+                        {
+                            File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json");
+                        }
+
 
                         if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == true)
                         {
@@ -946,6 +970,17 @@ namespace PWR_PL_Implementator
                         else
                         {
                             ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
+
+                            ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
+                        }
+
+                        if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json.ORIG.BAK-" + kompatybilny_numerwersjigry) == true)
+                        {
+                            File.Move("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json.ORIG.BAK-" + kompatybilny_numerwersjigry, "..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json");
+                        }
+                        else
+                        {
+                            ZapiszLOG("Wykryto brak kopii zapasowej oryginalnego pliku gry, który deimplementator chciał automatycznie przywrócić z: " + exe_sciezka.Replace("\\Zaimplementuj_PWR_PL", "").Replace(".dll", "").Replace(".exe", "") + "\\..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json.ORIG.BAK-" + kompatybilny_numerwersjigry + ".");
 
                             ilosc_wykrytychbrakujacychelementowORIGBAKdlaTEJWERSJIGRY++;
                         }
@@ -982,6 +1017,7 @@ namespace PWR_PL_Implementator
                     if (File.Exists("..\\Wrath_Data\\sharedassets0.assets")) { File.Delete("..\\Wrath_Data\\sharedassets0.assets"); }
                     if (File.Exists("..\\Bundles\\ui")) { File.Delete("..\\Bundles\\ui"); }
                     if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json")) { File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText.json"); }
+                    if (File.Exists("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json")) { File.Delete("..\\Wrath_Data\\StreamingAssets\\IntroductoryText_Steam.json"); }
 
                     if (Directory.Exists("..\\Wrath_Data\\StreamingAssets\\Localization\\")) { Directory.Delete("..\\Wrath_Data\\StreamingAssets\\Localization\\", true); }
 
