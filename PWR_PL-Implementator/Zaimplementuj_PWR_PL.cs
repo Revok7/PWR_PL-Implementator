@@ -48,7 +48,7 @@ namespace PWR_PL_Implementator
 
     class PWR_PL_Implementator
     {
-        readonly static long _kompilacja = 202311211824;
+        readonly static long _kompilacja = 202312140203;
         readonly static string _PWR_PL_naglowek = "Implementator polonizacji PWR_PL (2023), kompilacja " + _kompilacja + " by Revok";
 
         readonly static string exe_sciezka = AppDomain.CurrentDomain.BaseDirectory + "Zaimplementuj_PWR_PL.exe";
@@ -532,6 +532,8 @@ namespace PWR_PL_Implementator
 
         private static void Main(string[] args)
         {
+            Blokuj_zamkniecie_okna.Czy_blokowac();
+
             try
             {
 
@@ -587,6 +589,9 @@ namespace PWR_PL_Implementator
                 Koniec();
                 
             }
+
+            Blokuj_zamkniecie_okna.Czy_blokowac(false);
+
         }
 
         private static void Test()
