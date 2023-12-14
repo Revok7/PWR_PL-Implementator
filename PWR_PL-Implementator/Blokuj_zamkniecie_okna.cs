@@ -18,9 +18,6 @@ namespace PWR_PL_Implementator
 
         public static void Czy_blokowac(bool czy_blokowac = true)
         {
-            //bool ustawienie = true;
-            //if (czy_blokowac == true) { ustawienie = false; }
-
             DeleteMenu(GetSystemMenu(GetConsoleWindow(), !czy_blokowac), SC_CLOSE, MF_BYCOMMAND);
         }
     }
